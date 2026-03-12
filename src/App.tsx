@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-import logoIcon        from './assets/LOGOJCBCONSULT.png';
-import logoFull        from './assets/logo-contexto.png';
 import logoMef         from './assets/clientes/mef.png';
 import logoBci         from './assets/clientes/bci-miami.png';
 import logoBanmat      from './assets/clientes/banmat.png';
@@ -318,37 +316,19 @@ const ConsultationModal = ({
 
 // ─── FLOATING CTA (MOBILE) ────────────────────────────────────────────────────
 
-const FloatingCTA = ({ onClick }: { onClick: () => void }) => {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 120);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  return (
-    <AnimatePresence>
-      {visible && (
-        <motion.button
-          initial={{ y: 80, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 80, opacity: 0 }}
-          transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-          onClick={onClick}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 md:hidden
-                     bg-brand-navy text-white rounded-full border border-white/20
-                     px-8 py-4 shadow-2xl shadow-black/30
-                     text-[13px] font-bold uppercase tracking-[0.18em]
-                     flex items-center gap-2.5
-                     active:scale-95 transition-transform"
-        >
-          Cotizar Tasación
-        </motion.button>
-      )}
-    </AnimatePresence>
-  );
-};
+const FloatingCTA = ({ onClick }: { onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 md:hidden
+               bg-brand-navy text-white rounded-full border border-white/20
+               px-8 py-4 shadow-2xl shadow-black/30
+               text-[13px] font-bold uppercase tracking-[0.18em]
+               flex items-center gap-2.5
+               active:scale-95 transition-transform"
+  >
+    Solicitar Tasación
+  </button>
+);
 
 // ─── SHARED ICON ──────────────────────────────────────────────────────────────
 
@@ -362,68 +342,24 @@ const WaIcon = () => (
 // ─── NAVBAR ───────────────────────────────────────────────────────────────────
 
 const Navbar = ({ onContact }: { onContact: () => void }) => {
-  const [hidden, setHidden]   = useState(false);
-  const [atTop,  setAtTop]    = useState(true);
-  const prevY = React.useRef(0);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setAtTop(y < 80);
-      if (y < 80) { setHidden(false); prevY.current = y; return; }
-      setHidden(y > prevY.current);
-      prevY.current = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
-    <nav
-      // hide-on-scroll only on desktop (md+); mobile stays fixed always
-      className={`fixed top-0 w-full z-50 bg-brand-ivory/90 backdrop-blur-md border-b border-black/[0.07] transition-transform duration-300 ${hidden ? 'md:-translate-y-full' : 'translate-y-0'}`}
-    >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20 h-[64px] flex items-center justify-between">
-
+    <nav className={`sticky top-0 w-full z-50 bg-brand-ivory/95 backdrop-blur-md border-b border-black/[0.07] transition-shadow duration-300 ${scrolled ? 'shadow-sm' : ''}`}>
+      <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20 h-[60px] flex items-center justify-between">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Inicio"
-          className="flex-shrink-0"
+          className="flex-shrink-0 text-left"
         >
-          {/* ── MOBILE: always show icon, no crossfade ── */}
-          <div className="md:hidden relative overflow-hidden" style={{ width: '64px', height: '48px' }}>
-            <img
-              src={logoIcon}
-              alt="JCB Consult"
-              className="absolute"
-              style={{ height: '275px', width: 'auto', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-            />
-          </div>
-
-          {/* ── DESKTOP: crossfade wordmark → icon on scroll ── */}
-          <div
-            className="hidden md:block relative overflow-hidden transition-all duration-300 ease-in-out"
-            style={{ width: atTop ? '160px' : '64px', height: '48px' }}
-          >
-            {/* Full wordmark at top */}
-            <div className="absolute inset-0 overflow-hidden transition-opacity duration-300" style={{ opacity: atTop ? 1 : 0 }}>
-              <img
-                src={logoFull}
-                alt="Juan Carlos Bejarano — Perito Tasador"
-                className="absolute"
-                style={{ height: '126px', width: 'auto', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-              />
-            </div>
-            {/* Icon when scrolled */}
-            <div className="absolute inset-0 overflow-hidden transition-opacity duration-300" style={{ opacity: atTop ? 0 : 1 }}>
-              <img
-                src={logoIcon}
-                alt="JCB Consult"
-                className="absolute"
-                style={{ height: '275px', width: 'auto', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-              />
-            </div>
-          </div>
+          <p className="font-bold text-[15px] text-brand-navy leading-none tracking-tight">JCB Consult</p>
+          <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/45 font-semibold mt-0.5">Perito Tasador SBS</p>
         </button>
 
         <div className="flex items-center gap-5 md:gap-8">
@@ -433,11 +369,14 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
           <a href="#proceso" className="hidden md:inline text-[12px] font-medium text-brand-navy/50 hover:text-brand-navy transition-colors">
             Proceso
           </a>
+          <a href="#contacto" className="hidden md:inline text-[12px] font-medium text-brand-navy/50 hover:text-brand-navy transition-colors">
+            Contacto
+          </a>
           <button
             onClick={onContact}
             className="bg-brand-navy text-white rounded-full px-5 py-2.5 text-[12px] font-semibold hover:bg-brand-navy/90 transition-colors"
           >
-            Solicitar Tasación
+            Solicitar tasación
           </button>
         </div>
       </div>
@@ -448,58 +387,17 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 
 const Hero = ({ onContact }: { onContact: () => void }) => {
-  const [showJcb, setShowJcb] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setShowJcb(true), 1400);
-    return () => clearTimeout(t);
-  }, []);
-
   return (
   <section className="relative bg-brand-ivory overflow-hidden flex flex-col md:min-h-screen">
 
-    {/* ── LOGO ANIMATION HEADER ─────────────────────────────────────────── */}
-    <div className="relative z-20 h-20 md:h-24 flex-shrink-0">
-      {/* logocontexto — initial state, centered, fades out */}
-      <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: showJcb ? 0 : 1 }}
-        transition={{ duration: 0.7 }}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      >
-        <img
-          src={logoFull}
-          alt="JCB Consult"
-          className="max-h-14 md:max-h-16 w-auto object-contain"
-        />
-      </motion.div>
-
-      {/* logojcbconsult — final state, home button, fades in */}
-      <motion.a
-        href="/"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: showJcb ? 1 : 0 }}
-        transition={{ duration: 0.7 }}
-        aria-label="Inicio"
-        className="absolute left-6 md:left-14 lg:left-20 top-1/2 -translate-y-1/2"
-        style={{ pointerEvents: showJcb ? 'auto' : 'none' }}
-      >
-        <img
-          src={logoIcon}
-          alt="JCB Consult"
-          className="h-10 md:h-12 w-auto object-contain"
-        />
-      </motion.a>
-    </div>
-
     {/* ── DESKTOP: photo bleeds right half ─────────────────────────────── */}
-    <div className="absolute inset-y-0 right-0 w-[52%] hidden md:block">
+    <div className="absolute inset-y-0 right-0 w-[43%] hidden md:block">
       <img
         src="/JCBHERO.png"
         alt="Juan Carlos Bejarano — Perito Tasador Certificado SBS"
         className="w-full h-full object-cover object-top"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-brand-ivory via-brand-ivory/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-brand-ivory/90 via-brand-ivory/15 to-transparent" />
     </div>
 
     {/* ── MOBILE: photo first, full width ──────────────────────────────── */}
@@ -510,12 +408,11 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
         className="w-full h-[72vw] object-cover object-top"
       />
       <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-brand-ivory via-brand-ivory/70 to-transparent" />
-      <div className="absolute bottom-5 left-5">
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2.5 inline-flex flex-col shadow-md">
-          <span className="font-bold text-brand-navy text-[14px] leading-tight">Juan Carlos Bejarano</span>
-          <span className="text-[8px] uppercase tracking-[0.3em] text-brand-navy/50 font-bold mt-0.5">Perito Tasador · Cert. SBS</span>
-        </div>
-      </div>
+    </div>
+
+    {/* ── MOBILE: name below image ──────────────────────────────────────── */}
+    <div className="md:hidden px-6 pt-4 pb-1">
+      <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold">Juan Carlos Bejarano · Perito Tasador Cert. SBS</p>
     </div>
 
     {/* ── TEXT CONTENT ─────────────────────────────────────────────────── */}
@@ -535,6 +432,9 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
         <div className="w-5 h-px bg-brand-navy/25" />
         <span className="text-[9px] font-bold uppercase tracking-[0.38em] text-brand-navy/45">Lima Metropolitana</span>
       </div>
+
+      {/* Desktop name */}
+      <p className="hidden md:block text-[12px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-3">Juan Carlos Bejarano</p>
 
       <h1
         className="font-bold text-brand-navy leading-[1.08] mb-5 md:mb-6"
@@ -579,6 +479,7 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
       >
         Solicitar Tasación
       </button>
+      <p className="text-[11px] text-brand-navy/40 font-medium mt-3">Respuesta en menos de 24 horas</p>
     </motion.div>
 
     {/* Credentials strip — desktop only */}
@@ -773,7 +674,7 @@ const Services = ({ onContact }: { onContact: () => void }) => {
           <div
             key={s.n}
             onClick={onContact}
-            className="group border-b border-black/[0.08] py-7 grid grid-cols-[40px_1fr_auto] md:grid-cols-[70px_1fr_1.8fr_auto] gap-x-6 items-center hover:bg-black/[0.015] transition-colors duration-200 -mx-6 md:-mx-14 lg:-mx-20 px-6 md:px-14 lg:px-20 cursor-pointer"
+            className="group border-b border-black/[0.08] py-6 grid grid-cols-[40px_1fr_auto] md:grid-cols-[56px_1fr_1.4fr_auto] gap-x-6 items-center hover:bg-black/[0.015] transition-colors duration-200 -mx-6 md:-mx-14 lg:-mx-20 px-6 md:px-14 lg:px-20 cursor-pointer"
           >
             <span className="text-[11px] font-bold text-brand-navy/25">{s.n}</span>
             <div>
@@ -782,7 +683,7 @@ const Services = ({ onContact }: { onContact: () => void }) => {
               </h3>
               <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/40 font-bold">{s.sub}</p>
             </div>
-            <p className="text-[13px] text-brand-navy/50 leading-[1.65] hidden md:block">{s.desc}</p>
+            <p className="text-[13px] text-brand-navy/50 leading-[1.65] hidden md:block max-w-[320px]">{s.desc}</p>
             <span className="text-brand-navy/20 group-hover:text-brand-navy/60 group-hover:translate-x-1 transition-all duration-200 text-base">→</span>
           </div>
         ))}
@@ -802,7 +703,7 @@ const WhyIndependent = () => (
           className="font-bold leading-[1.1] mb-6"
           style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
         >
-          La tasación<br />independiente<br />protege su<br />patrimonio.
+          La tasación<br />independiente<br /><span style={{ color: '#C5A059' }}>protege su<br />patrimonio.</span>
         </h2>
         <p className="text-[14px] leading-[1.8] text-white/50 max-w-[320px]">
           Los bancos contratan tasadores que minimizan su exposición al riesgo. Un informe independiente le otorga el argumento técnico para negociar.
@@ -858,38 +759,24 @@ const LOGOS = [
 ];
 
 const Clients = () => (
-  <section className="bg-white border-t border-black/[0.07] py-12 md:py-20">
-    <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20 grid md:grid-cols-[1fr_1.6fr] gap-12 md:gap-20 items-center">
-
-      {/* Left: copy */}
-      <div>
-        <p className="text-[10px] uppercase tracking-[0.38em] text-brand-navy/40 font-bold mb-3">Instituciones</p>
-        <h2 className="font-bold leading-tight mb-4" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.4rem)' }}>
-          Entidades que han<br />confiado en nuestros<br />informes
+  <section className="bg-white border-t border-black/[0.07] py-8 md:py-14">
+    <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20">
+      <div className="mb-8 md:mb-10">
+        <p className="text-[10px] uppercase tracking-[0.38em] text-brand-navy/40 font-bold mb-2">Instituciones</p>
+        <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.4rem)' }}>
+          Entidades que han confiado<br className="hidden md:block" /> en nuestros informes
         </h2>
-        <p className="text-[13px] leading-[1.8] text-brand-navy/45 max-w-[300px]">
-          Experiencia con entidades públicas, instituciones financieras y empresas privadas en Lima.
-        </p>
       </div>
-
-      {/* Right: marquee */}
-      <div className="relative overflow-hidden">
-        {/* Fade edges */}
-        <div className="absolute inset-y-0 left-0 w-12 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-12 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none" />
-
-        {/* Track */}
-        <div className="flex animate-marquee gap-20 w-max py-4">
-          {[...LOGOS, ...LOGOS].map((logo, i) => (
-            <div key={i} className="flex-none flex items-center justify-center w-[220px] md:w-[260px]">
-              <img
-                src={logo.src}
-                alt={logo.alt}
-                className="h-[120px] md:h-[140px] w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition duration-300"
-              />
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        {LOGOS.map((logo) => (
+          <div key={logo.alt} className="flex items-center justify-center p-4 md:p-6">
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              className="h-[108px] md:h-[135px] w-auto object-contain grayscale opacity-55 hover:grayscale-0 hover:opacity-100 transition duration-300"
+            />
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -975,7 +862,8 @@ export default function App() {
   const openModal = () => setModalOpen(true);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20 md:pb-0">
+      <Navbar onContact={openModal} />
       <Hero onContact={openModal} />
       <CredibilityStrip />
       <WhatYouReceive />
