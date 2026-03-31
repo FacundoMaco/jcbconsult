@@ -11,6 +11,24 @@ import logoVivienda    from './assets/clientes/vivienda.png';
 import logoProinversion from './assets/clientes/proinversion.png';
 import logoMepsa       from './assets/clientes/mepsa.png';
 
+// ─── USE IN VIEW HOOK ─────────────────────────────────────────────────────────
+
+function useInView(threshold = 0.1) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [inView, setInView] = React.useState(false);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect(); } },
+      { threshold }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
+
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface LeadForm {
@@ -103,7 +121,7 @@ const ConsultationModal = ({
   const inputCls =
     'w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-[14px] text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-navy transition-colors';
   const selectCls = `${inputCls} appearance-none cursor-pointer`;
-  const labelCls = 'block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-navy/50 mb-1.5';
+  const labelCls = 'block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-navy/70 mb-1.5';
 
   return (
     <AnimatePresence>
@@ -112,7 +130,7 @@ const ConsultationModal = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.18 }}
           className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center"
           onClick={(e) => e.target === e.currentTarget && onClose()}
         >
@@ -126,13 +144,13 @@ const ConsultationModal = ({
             {/* Header */}
             <div className="sticky top-0 bg-brand-ivory border-b border-black/[0.07] px-6 py-5 flex items-start justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.35em] font-bold text-brand-navy/45 mb-1">
+                <p className="text-[10px] uppercase tracking-[0.35em] font-bold text-brand-navy/60 mb-1">
                   JCB CONSULT
                 </p>
                 <h2 className="font-bold text-xl text-brand-navy leading-tight">
                   Solicite su cotización
                 </h2>
-                <p className="text-[12px] text-brand-navy/45 mt-0.5">Respuesta en menos de 24 horas</p>
+                <p className="text-[12px] text-brand-navy/60 mt-0.5">Respuesta en menos de 24 horas</p>
               </div>
               <button
                 onClick={onClose}
@@ -295,7 +313,7 @@ const ConsultationModal = ({
                       <button
                         disabled={status === 'loading'}
                         type="submit"
-                        className="w-full bg-brand-navy text-white rounded-full py-4 text-[13px] font-bold uppercase tracking-[0.2em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all disabled:opacity-50"
+                        className="w-full bg-brand-navy text-white rounded-full py-4 text-[13px] font-bold uppercase tracking-[0.2em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {status === 'loading' ? 'Enviando...' : 'Enviar solicitud'}
                       </button>
@@ -319,6 +337,7 @@ const ConsultationModal = ({
 const FloatingCTA = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
+    aria-label="Solicitar Tasación"
     className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 md:hidden
                bg-brand-navy text-white rounded-full border border-white/20
                px-8 py-4 shadow-2xl shadow-black/30
@@ -351,7 +370,7 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
   }, []);
 
   return (
-    <nav className={`sticky top-0 w-full z-50 bg-brand-ivory/95 backdrop-blur-md border-b border-black/[0.07] transition-shadow duration-300 ${scrolled ? 'shadow-sm' : ''}`}>
+    <nav className={`sticky top-0 w-full z-50 bg-brand-ivory/95 backdrop-blur-md border-b border-black/[0.07] transition-shadow duration-200 ${scrolled ? 'shadow-sm' : ''}`}>
       <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20 h-[60px] flex items-center justify-between">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -359,17 +378,17 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
           className="flex-shrink-0 text-left"
         >
           <p className="font-bold text-[15px] text-brand-navy leading-none tracking-tight">JCB Consult</p>
-          <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/45 font-semibold mt-0.5">Perito Tasador SBS</p>
+          <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/45 font-semibold mt-0.5">Tasaciones - Pericias</p>
         </button>
 
         <div className="flex items-center gap-5 md:gap-8">
-          <a href="#servicios" className="hidden md:inline text-[12px] font-medium text-brand-navy/50 hover:text-brand-navy transition-colors">
+          <a href="#servicios" className="hidden md:inline text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
             Servicios
           </a>
-          <a href="#proceso" className="hidden md:inline text-[12px] font-medium text-brand-navy/50 hover:text-brand-navy transition-colors">
+          <a href="#proceso" className="hidden md:inline text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
             Proceso
           </a>
-          <a href="#contacto" className="hidden md:inline text-[12px] font-medium text-brand-navy/50 hover:text-brand-navy transition-colors">
+          <a href="#contacto" className="hidden md:inline text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
             Contacto
           </a>
           <button
@@ -388,7 +407,7 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
 
 const Hero = ({ onContact }: { onContact: () => void }) => {
   return (
-  <section className="relative bg-brand-ivory overflow-hidden flex flex-col md:min-h-screen">
+  <section className="relative bg-brand-ivory overflow-hidden flex flex-col md:min-h-[78vh]">
 
     {/* ── DESKTOP: photo bleeds right half ─────────────────────────────── */}
     <div className="absolute inset-y-0 right-0 w-[43%] hidden md:block">
@@ -416,16 +435,20 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
     </div>
 
     {/* ── TEXT CONTENT ─────────────────────────────────────────────────── */}
+
+    {/* Credential pill — visible on both mobile and desktop */}
+    <div className="relative z-10 px-6 md:px-14 lg:px-20 pt-5 md:pt-8">
+      <div className="inline-flex items-center gap-2 bg-brand-navy/[0.07] text-brand-navy/60 rounded-full px-4 py-1.5 w-fit">
+        <span className="text-[10px] font-bold uppercase tracking-[0.35em]">Ingeniero Civil CIP – MBA – Perito REPEV</span>
+      </div>
+    </div>
+
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-      className="relative z-10 md:flex-1 md:flex md:flex-col md:justify-center px-6 md:px-14 lg:px-20 pt-5 md:pt-8 pb-10 max-w-[680px]"
+      className="relative z-10 md:flex-1 md:flex md:flex-col md:justify-center px-6 md:px-14 lg:px-20 pt-3 md:pt-3 pb-6 max-w-[680px]"
     >
-      {/* Desktop badge */}
-      <div className="hidden md:inline-flex items-center gap-2 bg-brand-navy/[0.07] text-brand-navy/60 rounded-full px-4 py-1.5 mb-8 w-fit">
-        <span className="text-[10px] font-bold uppercase tracking-[0.35em]">Lima Metropolitana · 25 años de trayectoria</span>
-      </div>
 
       {/* Mobile overline */}
       <div className="md:hidden flex items-center gap-2.5 mb-4">
@@ -441,14 +464,13 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
         style={{ fontSize: 'clamp(1.95rem, 5.5vw, 5rem)' }}
       >
         Perito Tasador<br />
-        Certificado SBS<br />
-        en Lima
+        Certificado
       </h1>
 
       {/* Mobile quick stats */}
       <div className="md:hidden flex items-center gap-4 mb-5 pb-5 border-b border-black/[0.07]">
         <div className="text-center">
-          <p className="font-bold text-brand-navy text-[1.3rem] leading-none">500+</p>
+          <p className="font-bold text-brand-navy text-[1.3rem] leading-none">300+</p>
           <p className="text-[9px] text-brand-navy/40 font-medium mt-0.5 uppercase tracking-wide">Tasaciones</p>
         </div>
         <div className="w-px h-8 bg-black/[0.08]" />
@@ -464,13 +486,13 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
       </div>
 
       {/* Desktop description */}
-      <p className="hidden md:block text-[16px] leading-[1.75] text-brand-navy/55 max-w-[420px] mb-10">
-        Informes técnicos de valorización de inmuebles con respaldo oficial. Válidos para bancos, municipalidades y juzgados.
+      <p className="hidden md:block text-[16px] leading-[1.75] text-brand-navy/70 max-w-[420px] mb-10">
+        Informes técnicos de tasación de inmuebles, vehículos, equipos y maquinarias, consultoría, pericias, gestión inmobiliaria.
       </p>
 
       {/* Mobile description */}
-      <p className="md:hidden text-[14px] leading-[1.65] text-brand-navy/55 mb-7">
-        Informes de valorización válidos para bancos, municipalidades y juzgados de Lima.
+      <p className="md:hidden text-[14px] leading-[1.65] text-brand-navy/70 mb-7">
+        Informes de tasación de inmuebles, vehículos, equipos y maquinarias, consultoría y pericias.
       </p>
 
       <button
@@ -479,16 +501,16 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
       >
         Solicitar Tasación
       </button>
-      <p className="text-[11px] text-brand-navy/40 font-medium mt-3">Respuesta en menos de 24 horas</p>
+      <p className="text-[12px] text-brand-navy/55 font-medium mt-3">Respuesta en menos de 24 horas</p>
     </motion.div>
 
     {/* Credentials strip — desktop only */}
-    <div className="hidden md:block relative z-10 mt-auto border-t border-black/[0.08] px-6 md:px-14 lg:px-20 py-4">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-        {['Certificado SBS', 'Ministerio de Vivienda', 'Colegio de Ingenieros del Perú', 'Registro REPEV'].map((c, i) => (
+    <div className="hidden md:block relative z-10 mt-auto border-t border-black/[0.08] px-6 md:px-14 lg:px-20 py-5">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
+        {['Superintendencia de Banca, Seguros y AFP', 'Ministerio de Vivienda Construcción y Saneamiento', 'Centro de Peritaje — Colegio de Ingenieros del Perú'].map((c, i) => (
           <React.Fragment key={c}>
-            {i > 0 && <span className="text-brand-navy/20">·</span>}
-            <span className="text-[9px] uppercase tracking-[0.3em] text-brand-navy/40 font-bold">{c}</span>
+            {i > 0 && <span className="text-brand-navy/25 text-sm">·</span>}
+            <span className="text-[10px] uppercase tracking-[0.28em] text-brand-navy/50 font-bold">{c}</span>
           </React.Fragment>
         ))}
       </div>
@@ -502,11 +524,13 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
 const CredibilityStrip = () => {
   const stats = [
     { value: '25', suffix: 'años', label: 'de trayectoria' },
-    { value: '500+', suffix: '', label: 'tasaciones realizadas' },
-    { value: 'SBS', suffix: '', label: 'registro oficial' },
-    { value: 'CIP', suffix: '', label: 'Ingeniero Civil' },
+    { value: '300+', suffix: '', label: 'tasaciones realizadas' },
+    { value: 'SBS', suffix: '', label: 'perito valuador' },
+    { value: 'MVCS', suffix: '', label: 'perito tasador' },
+    { value: 'CIP', suffix: '', label: 'perito' },
   ];
 
+  const { ref: sectionRef, inView } = useInView(0.1);
   const desktopRowRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
@@ -534,20 +558,30 @@ const CredibilityStrip = () => {
   }, []);
 
   return (
-    <section className="bg-white border-y border-black/[0.07]">
+    <section className="bg-white border-y border-black/[0.07]" ref={sectionRef}>
       {/* Mobile: horizontal scroll row */}
-      <div className="md:hidden flex overflow-x-auto scrollbar-none px-6 divide-x divide-black/[0.07]">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        className="md:hidden flex overflow-x-auto scrollbar-none px-6 divide-x divide-black/[0.07]"
+      >
         {stats.map((s) => (
           <div key={s.label} className="flex-none py-6 px-7 text-center min-w-[100px]">
             <p className="font-bold text-brand-navy text-[1.7rem] leading-none mb-1">
               {s.value}
               {s.suffix && <span className="text-brand-navy/50 text-[0.45em] font-semibold ml-0.5">{s.suffix}</span>}
             </p>
-            <p className="text-[9px] uppercase tracking-[0.2em] text-brand-navy/40 font-semibold whitespace-nowrap">{s.label}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-brand-navy/55 font-semibold whitespace-nowrap">{s.label}</p>
           </div>
         ))}
-      </div>
+      </motion.div>
       {/* Desktop */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      >
       <div
         ref={desktopRowRef}
         className="hidden md:flex max-w-[1400px] mx-auto px-14 overflow-x-auto scrollbar-none divide-x divide-black/[0.07]"
@@ -561,12 +595,13 @@ const CredibilityStrip = () => {
               {s.value}
               {s.suffix && <span className="text-brand-navy/50 text-[0.5em] font-semibold ml-1">{s.suffix}</span>}
             </p>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-navy/40 font-semibold whitespace-nowrap">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-navy/55 font-semibold whitespace-nowrap">
               {s.label}
             </p>
           </div>
         ))}
       </div>
+      </motion.div>
     </section>
   );
 };
@@ -576,51 +611,65 @@ const CredibilityStrip = () => {
 const WhatYouReceive = () => {
   const items = [
     {
-      n: '01',
-      title: 'Informe técnico oficial firmado',
-      desc: 'Documento suscrito por Ingeniero Civil CIP con número de registro, metodología y sustento del valor determinado.',
+      title: 'Informe técnico',
+      desc: 'Documento suscrito por ingenieros habilitados, con experiencia, formación y certificación; sustento de valores y dictámenes determinados.',
     },
     {
-      n: '02',
-      title: 'Análisis de comparables de mercado',
-      desc: 'Estudio de transacciones recientes en la zona para respaldar el valor con data real y actualizada.',
+      title: 'Análisis y evaluación',
+      desc: 'Investigación y diagnóstico específico, para respaldar los resultados con data real y actualizada.',
     },
     {
-      n: '03',
-      title: 'Entrega en 3 a 5 días hábiles',
-      desc: 'Formato digital (PDF) y físico. Aceptado por entidades bancarias, municipalidades y juzgados de Lima.',
+      title: 'Entrega de resultados',
+      desc: 'En formato y firma digital, entre 3 y 5 días hábiles. Aceptados por el sector privado y financiero, entidades estatales y judiciales.',
     },
   ];
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section id="proceso" className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
       <div className="max-w-[1400px] mx-auto grid md:grid-cols-[1fr_1.7fr] gap-14 md:gap-24 items-start">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.38em] text-white/45 font-bold mb-5">Lo que recibe</p>
+          <p className="text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Soluciones y propuesta de valor</p>
           <h2
             className="font-bold leading-[1.1] mb-6"
             style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
           >
-            Un informe que<br />resiste cualquier<br />cuestionamiento.
+            Estudio técnico sólido, consistente, resultados y conclusiones directas que resisten cuestionamientos.
           </h2>
-          <p className="text-[14px] leading-[1.8] text-white/50 max-w-[320px]">
-            Cada tasación incluye visita al inmueble, análisis de la zona y metodología oficial SBS.
+          <p className="text-[14px] leading-[1.8] text-white/65 max-w-[320px]">
+            Cada servicio incluye una visita de inspección, estudio de mercado, análisis de la información, aplicación de metodologías y normativas vigentes.
           </p>
         </div>
 
-        <div>
-          {items.map((item) => (
-            <div key={item.n} className="border-t border-white/10 py-8 grid grid-cols-[44px_1fr] gap-4">
-              <span className="text-[12px] font-bold text-white/20 pt-0.5">{item.n}</span>
-              <div>
-                <h3 className="font-bold text-[1.1rem] mb-2 leading-tight">{item.title}</h3>
-                <p className="text-[13px] text-white/50 leading-[1.7]">{item.desc}</p>
-              </div>
-            </div>
+        <div ref={containerRef}>
+          {items.map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 22 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
+              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: i * 0.1 }}
+              className="border-t border-white/10 py-8"
+            >
+              <h3 className="font-bold text-[1.1rem] mb-2 leading-tight">{item.title}</h3>
+              <p className="text-[13px] text-white/65 leading-[1.7]">{item.desc}</p>
+            </motion.div>
           ))}
           <div className="border-t border-white/15 pt-5">
-            <p className="text-[10px] uppercase tracking-[0.28em] text-white/40 font-bold">
-              Válido para bancos · municipios · notarías · juzgados
+            <p className="text-[11px] uppercase tracking-[0.28em] text-white/60 font-bold">
+              VALIDO PARA BANCOS – MINISTERIOS – JUZGADOS
             </p>
           </div>
         </div>
@@ -635,58 +684,73 @@ const Services = ({ onContact }: { onContact: () => void }) => {
   const services = [
     {
       n: '01', title: 'Residencial',
-      sub: 'Departamentos · Casas · Viviendas',
-      desc: 'Valorización en zonas consolidadas y en expansión de Lima Metropolitana y Callao.',
+      sub: 'CASAS – DEPARTAMENTOS – CONDOMINIOS',
+      desc: 'Valorización del terreno y edificaciones, supervisión de obras, gestión de proyectos, informes técnicos.',
     },
     {
       n: '02', title: 'Terrenos',
-      sub: 'Predios Urbanos · Expansión',
-      desc: 'Análisis de uso, zonificación y comparables de mercado para predios urbanos.',
+      sub: 'URBANOS – INDUSTRIALES – RÚSTICOS',
+      desc: 'Valorización, análisis de zonificación, habilitación urbana, servidumbres, afectaciones viales.',
     },
     {
       n: '03', title: 'Corporativo',
-      sub: 'Locales · Oficinas · Industrial',
-      desc: 'Metodología de ingresos y comparación para inmuebles comerciales e industriales.',
+      sub: 'COMERCIAL – INDUSTRIA – INSTITUCIONAL',
+      desc: 'Proyectos de inversión, evaluación de patrimonio, saneamiento técnico, tasación de equipos, valorización y baja de activos.',
     },
     {
       n: '04', title: 'Judicial',
-      sub: 'Herencias · Divorcios · Litigios',
-      desc: 'Peritajes con valor probatorio. Firma de Ingeniero Civil CIP aceptada en juzgados.',
+      sub: 'SUCESIONES – DIVORCIOS – LITIGIOS',
+      desc: 'Tasación de patrimonios, saneamiento técnico, consultoría, pericias con valor probatorio.',
     },
   ];
+
+  const listRef = React.useRef<HTMLDivElement>(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section id="servicios" className="bg-brand-ivory px-6 md:px-14 lg:px-20 py-12 md:py-24 border-t border-black/[0.07]">
       <div className="max-w-[1400px] mx-auto">
         <div className="flex items-end justify-between border-b border-black/[0.08] pb-8">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.38em] text-brand-navy/40 font-bold mb-3">Especialidades</p>
             <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
-              Áreas de práctica
+              Servicios JCB Consult
             </h2>
           </div>
-          <span className="text-[10px] uppercase tracking-[0.25em] text-brand-navy/30 font-bold hidden md:block pb-1">
-            4 tipos de tasación
-          </span>
         </div>
 
-        {services.map((s) => (
-          <div
-            key={s.n}
-            onClick={onContact}
-            className="group border-b border-black/[0.08] py-6 grid grid-cols-[40px_1fr_auto] md:grid-cols-[56px_1fr_1.4fr_auto] gap-x-6 items-center hover:bg-black/[0.015] transition-colors duration-200 -mx-6 md:-mx-14 lg:-mx-20 px-6 md:px-14 lg:px-20 cursor-pointer"
-          >
-            <span className="text-[11px] font-bold text-brand-navy/25">{s.n}</span>
-            <div>
-              <h3 className="font-bold leading-tight mb-1" style={{ fontSize: 'clamp(1.1rem, 2vw, 1.5rem)' }}>
-                {s.title}
-              </h3>
-              <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/40 font-bold">{s.sub}</p>
-            </div>
-            <p className="text-[13px] text-brand-navy/50 leading-[1.65] hidden md:block max-w-[320px]">{s.desc}</p>
-            <span className="text-brand-navy/20 group-hover:text-brand-navy/60 group-hover:translate-x-1 transition-all duration-200 text-base">→</span>
-          </div>
-        ))}
+        <div ref={listRef}>
+          {services.map((s, i) => (
+            <motion.div
+              key={s.n}
+              initial={{ opacity: 0, y: 22 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
+              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: i * 0.1 }}
+              onClick={onContact}
+              className="group border-b border-black/[0.08] py-6 grid grid-cols-[40px_1fr_auto] md:grid-cols-[56px_1fr_1.4fr_auto] gap-x-6 items-center hover:bg-black/[0.015] transition-colors duration-200 -mx-6 md:-mx-14 lg:-mx-20 px-6 md:px-14 lg:px-20 cursor-pointer"
+            >
+              <span className="text-[11px] font-bold text-brand-navy/25">{s.n}</span>
+              <div>
+                <h3 className="font-bold leading-tight mb-1" style={{ fontSize: 'clamp(1.1rem, 2vw, 1.5rem)' }}>
+                  {s.title}
+                </h3>
+                <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/40 font-bold">{s.sub}</p>
+              </div>
+              <p className="text-[13px] text-brand-navy/65 leading-[1.65] hidden md:block max-w-[320px]">{s.desc}</p>
+              <span className="text-brand-navy/20 group-hover:text-brand-navy/60 group-hover:translate-x-1 transition-all duration-200 text-base">→</span>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -694,36 +758,47 @@ const Services = ({ onContact }: { onContact: () => void }) => {
 
 // ─── WHY INDEPENDENT ──────────────────────────────────────────────────────────
 
-const WhyIndependent = () => (
+const WhyIndependent = () => {
+  const { ref, inView } = useInView(0.1);
+  return (
   <section className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
-    <div className="max-w-[1400px] mx-auto grid md:grid-cols-[1fr_1.1fr] gap-14 md:gap-24 items-start">
-      <div>
-        <p className="text-[10px] uppercase tracking-[0.38em] text-white/45 font-bold mb-5">Por qué JCB</p>
+    <div ref={ref} className="max-w-[1400px] mx-auto grid md:grid-cols-[1fr_1.1fr] gap-14 md:gap-24 items-start">
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        <p className="text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Por qué JCB</p>
         <h2
           className="font-bold leading-[1.1] mb-6"
           style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
         >
           La tasación<br />independiente<br /><span style={{ color: '#C5A059' }}>protege su<br />patrimonio.</span>
         </h2>
-        <p className="text-[14px] leading-[1.8] text-white/50 max-w-[320px]">
+        <p className="text-[14px] leading-[1.8] text-white/65 max-w-[320px]">
           Los bancos contratan tasadores que minimizan su exposición al riesgo. Un informe independiente le otorga el argumento técnico para negociar.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="pt-0 md:pt-10">
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        className="pt-0 md:pt-10"
+      >
         <div className="border-t border-white/10 pt-8 pb-9">
-          <p className="text-[9px] uppercase tracking-[0.35em] text-white/25 font-bold mb-5">Tasador Bancario</p>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/55 font-bold mb-5">Tasador Bancario</p>
           <ul className="space-y-3">
             {[
               'Objetivo: proteger el riesgo del banco.',
               'Aplica factores de descuento conservadores.',
               'Puede subvaluar la propiedad hasta un 20%.',
-            ].map((t) => <li key={t} className="text-[14px] text-white/40 leading-relaxed">{t}</li>)}
+            ].map((t) => <li key={t} className="text-[14px] text-white/60 leading-relaxed">{t}</li>)}
           </ul>
         </div>
 
         <div className="border-t border-white/20 pt-8 pb-9">
-          <p className="text-[9px] uppercase tracking-[0.35em] text-white/60 font-bold mb-5">Tasador Independiente · JCB</p>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/75 font-bold mb-5">Tasador Independiente · JCB</p>
           <ul className="space-y-3">
             {[
               'Objetivo: determinar el valor real de mercado.',
@@ -739,10 +814,11 @@ const WhyIndependent = () => (
           </span>
           <p className="text-[10px] uppercase tracking-[0.22em] text-white/25 font-bold mb-3">tasaciones realizadas</p>
         </div>
-      </div>
+      </motion.div>
     </div>
   </section>
-);
+  );
+};
 
 // ─── CLIENTS ──────────────────────────────────────────────────────────────────
 
@@ -758,44 +834,66 @@ const LOGOS = [
   { src: logoMepsa,        alt: 'MEPSA' },
 ];
 
-const Clients = () => (
-  <section className="bg-white border-t border-black/[0.07] py-8 md:py-14">
-    <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20">
-      <div className="mb-8 md:mb-10">
-        <p className="text-[10px] uppercase tracking-[0.38em] text-brand-navy/40 font-bold mb-2">Instituciones</p>
+const Clients = () => {
+  const { ref, inView } = useInView(0.1);
+  return (
+  <section className="bg-white border-t border-black/[0.07] py-10 md:py-16">
+    <div ref={ref} className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        className="mb-10 md:mb-12"
+      >
+        <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/55 font-bold mb-2">Instituciones</p>
         <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.4rem)' }}>
           Entidades que han confiado<br className="hidden md:block" /> en nuestros informes
         </h2>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.15 }}
+        className="grid grid-cols-2 md:grid-cols-3"
+      >
         {LOGOS.map((logo) => (
-          <div key={logo.alt} className="flex items-center justify-center p-4 md:p-6">
+          <div
+            key={logo.alt}
+            className="flex items-center justify-center py-8 md:py-12 px-6 md:px-10 border-b border-r border-black/[0.06] last:border-r-0 [&:nth-child(2n)]:border-r-0 md:[&:nth-child(2n)]:border-r md:[&:nth-child(3n)]:border-r-0"
+          >
             <img
               src={logo.src}
               alt={logo.alt}
-              className="h-[108px] md:h-[135px] w-auto object-contain grayscale opacity-55 hover:grayscale-0 hover:opacity-100 transition duration-300"
+              className="h-auto max-h-[100px] md:max-h-[140px] w-auto max-w-full object-contain transition duration-150"
             />
           </div>
         ))}
-      </div>
+      </motion.div>
     </div>
   </section>
-);
+  );
+};
 
 // ─── CONTACT SECTION ──────────────────────────────────────────────────────────
 
-const ContactSection = ({ onContact }: { onContact: () => void }) => (
+const ContactSection = ({ onContact }: { onContact: () => void }) => {
+  const { ref, inView } = useInView(0.1);
+  return (
   <section id="contacto" className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
-    <div className="max-w-[1400px] mx-auto grid md:grid-cols-2 gap-14 md:gap-24 items-center">
-      <div>
-        <p className="text-[10px] uppercase tracking-[0.38em] text-white/45 font-bold mb-5">Contacto</p>
+    <div ref={ref} className="max-w-[1400px] mx-auto grid md:grid-cols-2 gap-14 md:gap-24 items-center">
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        <p className="text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Contacto</p>
         <h2
           className="font-bold leading-[1.1] mb-6"
           style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
         >
           ¿Necesita tasar<br />un inmueble?
         </h2>
-        <p className="text-[14px] leading-[1.8] text-white/50 max-w-[380px] mb-10">
+        <p className="text-[14px] leading-[1.8] text-white/65 max-w-[380px] mb-10">
           Complete la solicitud y Juan Carlos Bejarano le responderá en menos de 24 horas con una propuesta para su caso.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
@@ -807,30 +905,36 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => (
           </button>
           <button
             onClick={onContact}
-            className="border border-white/20 text-white rounded-full px-8 py-4 text-[13px] font-semibold flex items-center gap-2.5 hover:bg-white/10 transition-colors"
+            className="bg-black text-white rounded-full px-8 py-4 text-[13px] font-bold flex items-center gap-2.5 hover:bg-black/80 transition-colors"
           >
             <WaIcon />
             Contactar por WhatsApp
           </button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="border-t md:border-t-0 md:border-l border-white/10 pt-10 md:pt-0 md:pl-14 space-y-8">
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        className="border-t md:border-t-0 md:border-l border-white/10 pt-10 md:pt-0 md:pl-14 space-y-8"
+      >
         {[
-          { label: 'Cobertura', value: 'Lima Metropolitana y Callao' },
-          { label: 'Tiempo de respuesta', value: 'Menos de 24 horas' },
-          { label: 'Entrega del informe', value: '3 a 5 días hábiles' },
-          { label: 'Formatos', value: 'Digital (PDF) y físico' },
+          { label: 'Cobertura', value: 'Lima Metropolitana y Callao · Regiones' },
+          { label: 'Tiempo de respuesta', value: '24 horas para Lima · 48 horas para Regiones' },
+          { label: 'Entrega de informe', value: '3 a 5 días hábiles según caso o tipo de servicio' },
+          { label: 'Formato', value: 'Digital (PDF) o físico según corresponda' },
         ].map((item) => (
           <div key={item.label}>
-            <p className="text-[10px] uppercase tracking-[0.32em] text-white/30 font-bold mb-1">{item.label}</p>
+            <p className="text-[10px] uppercase tracking-[0.32em] text-white/50 font-bold mb-1">{item.label}</p>
             <p className="text-[15px] font-semibold">{item.value}</p>
           </div>
         ))}
-      </div>
+      </motion.div>
     </div>
   </section>
-);
+  );
+};
 
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 
@@ -838,15 +942,15 @@ const Footer = () => (
   <footer className="bg-brand-navy text-white border-t border-white/[0.06] px-6 md:px-14 py-10">
     <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
       <div>
-        <p className="font-bold text-sm">JCB CONSULT</p>
-        <p className="text-[9px] uppercase tracking-[0.35em] text-white/40 font-bold mt-1">Perito Tasador SBS</p>
+        <p className="font-bold text-sm">JCB Consult</p>
+        <p className="text-[9px] uppercase tracking-[0.35em] text-white/40 font-bold mt-1">Tasaciones - Pericias</p>
       </div>
-      <p className="text-[11px] text-white/25">
-        © 2026 JCB Consult. Ingeniero Civil CIP Registrado. Lima, Perú.
+      <p className="text-[11px] text-white/45">
+        © 2026 JCB Consult. Ingeniero Civil CIP 49101. Lima, Perú.
       </p>
       <div className="flex gap-7">
         {[['#servicios', 'Servicios'], ['#contacto', 'Contacto']].map(([href, label]) => (
-          <a key={href} href={href} className="text-[11px] text-white/30 hover:text-white transition-colors uppercase tracking-[0.18em]">
+          <a key={href} href={href} className="text-[11px] text-white/50 hover:text-white transition-colors uppercase tracking-[0.18em]">
             {label}
           </a>
         ))}
