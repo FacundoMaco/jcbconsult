@@ -362,6 +362,7 @@ const WaIcon = () => (
 
 const Navbar = ({ onContact }: { onContact: () => void }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -369,37 +370,126 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  return (
-    <nav className={`sticky top-0 w-full z-50 bg-brand-ivory/95 backdrop-blur-md border-b border-black/[0.07] transition-shadow duration-200 ${scrolled ? 'shadow-sm' : ''}`}>
-      <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20 h-[60px] flex items-center justify-between">
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Inicio"
-          className="flex-shrink-0 text-left"
-        >
-          <p className="font-bold text-[15px] text-brand-navy leading-none tracking-tight">JCB Consult</p>
-          <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/45 font-semibold mt-0.5">Tasaciones - Pericias</p>
-        </button>
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
 
-        <div className="flex items-center gap-5 md:gap-8">
-          <a href="#servicios" className="hidden md:inline text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
-            Servicios
-          </a>
-          <a href="#proceso" className="hidden md:inline text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
-            Proceso
-          </a>
-          <a href="#contacto" className="hidden md:inline text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
-            Contacto
-          </a>
+  const navLinks = [
+    { href: '#servicios', label: 'Servicios' },
+    { href: '#proceso', label: 'Proceso' },
+    { href: '#contacto', label: 'Contacto' },
+  ];
+
+  return (
+    <>
+      <nav className={`sticky top-0 w-full z-50 bg-brand-ivory/95 backdrop-blur-md border-b border-black/[0.07] transition-shadow duration-200 ${scrolled ? 'shadow-sm' : ''}`}>
+        <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20 h-[60px] flex items-center justify-between">
           <button
-            onClick={onContact}
-            className="bg-brand-navy text-white rounded-full px-5 py-2.5 text-[12px] font-semibold hover:bg-brand-navy/90 transition-colors"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Inicio"
+            className="flex-shrink-0 text-left group/logo"
           >
-            Solicitar tasación
+            <p className="font-bold text-[15px] text-brand-navy leading-none tracking-tight relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-brand-gold group-hover/logo:after:w-full after:transition-all after:duration-300">JCB Consult</p>
+            <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/45 font-semibold mt-0.5">Tasaciones - Pericias</p>
+          </button>
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map(({ href, label }) => (
+              <a key={href} href={href} className="text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
+                {label}
+              </a>
+            ))}
+            <button
+              onClick={onContact}
+              className="bg-brand-navy text-white rounded-full px-5 py-2.5 text-[12px] font-semibold hover:bg-brand-navy/90 transition-colors"
+            >
+              Solicitar tasación
+            </button>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-[5px] -mr-1"
+          >
+            <motion.span
+              animate={menuOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="block w-5 h-px bg-brand-navy origin-center"
+            />
+            <motion.span
+              animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
+              transition={{ duration: 0.15 }}
+              className="block w-5 h-px bg-brand-navy"
+            />
+            <motion.span
+              animate={menuOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="block w-5 h-px bg-brand-navy origin-center"
+            />
           </button>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-black/40 md:hidden"
+              onClick={() => setMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed top-0 right-0 h-full w-72 z-50 bg-brand-ivory shadow-2xl md:hidden flex flex-col"
+            >
+              <div className="h-[60px] flex items-center justify-between px-6 border-b border-black/[0.07]">
+                <p className="font-bold text-[14px] text-brand-navy">Menú</p>
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Cerrar menú"
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/[0.06] transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 2l10 10M12 2L2 12" />
+                  </svg>
+                </button>
+              </div>
+              <nav className="flex flex-col px-6 py-8 gap-1 flex-1">
+                {navLinks.map(({ href, label }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className="text-[15px] font-medium text-brand-navy py-3 border-b border-black/[0.06] hover:text-brand-navy/70 transition-colors"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </nav>
+              <div className="px-6 pb-8">
+                <button
+                  onClick={() => { setMenuOpen(false); onContact(); }}
+                  className="w-full bg-brand-navy text-white rounded-full py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 transition-colors"
+                >
+                  Solicitar tasación
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
@@ -438,7 +528,7 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
 
     {/* Credential pill — visible on both mobile and desktop */}
     <div className="relative z-10 px-6 md:px-14 lg:px-20 pt-5 md:pt-8">
-      <div className="inline-flex items-center gap-2 bg-brand-navy/[0.07] text-brand-navy/60 rounded-full px-4 py-1.5 w-fit">
+      <div className="inline-flex items-center gap-2 bg-brand-navy/[0.07] text-brand-navy/60 rounded-full px-4 py-1.5 w-fit border border-brand-gold/30">
         <span className="text-[10px] font-bold uppercase tracking-[0.35em]">Ingeniero Civil CIP – MBA – Perito REPEV</span>
       </div>
     </div>
@@ -467,6 +557,17 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
         Certificado
       </h1>
 
+      {/* Mobile CTA — antes de stats y descripción */}
+      <div className="md:hidden mb-6">
+        <button
+          onClick={onContact}
+          className="w-full bg-brand-navy text-white rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-navy/20"
+        >
+          Solicitar Tasación
+        </button>
+        <p className="text-[11px] text-brand-navy/55 font-medium mt-2.5 text-center">Respuesta en menos de 24 horas</p>
+      </div>
+
       {/* Mobile quick stats */}
       <div className="md:hidden flex items-center gap-4 mb-5 pb-5 border-b border-black/[0.07]">
         <div className="text-center">
@@ -491,17 +592,18 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
       </p>
 
       {/* Mobile description */}
-      <p className="md:hidden text-[14px] leading-[1.65] text-brand-navy/70 mb-7">
+      <p className="md:hidden text-[14px] leading-[1.65] text-brand-navy/70 mb-4">
         Informes de tasación de inmuebles, vehículos, equipos y maquinarias, consultoría y pericias.
       </p>
 
+      {/* Desktop CTA */}
       <button
         onClick={onContact}
-        className="w-full sm:w-fit bg-brand-navy text-white rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-navy/20"
+        className="hidden md:block bg-brand-navy text-white rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-navy/20"
       >
         Solicitar Tasación
       </button>
-      <p className="text-[12px] text-brand-navy/55 font-medium mt-3">Respuesta en menos de 24 horas</p>
+      <p className="hidden md:block text-[11px] text-brand-navy/55 font-medium mt-3">Respuesta en menos de 24 horas</p>
     </motion.div>
 
     {/* Credentials strip — desktop only */}
@@ -642,7 +744,7 @@ const WhatYouReceive = () => {
     <section id="proceso" className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
       <div className="max-w-[1400px] mx-auto grid md:grid-cols-[1fr_1.7fr] gap-14 md:gap-24 items-start">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Soluciones y propuesta de valor</p>
+          <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Soluciones y propuesta de valor</p>
           <h2
             className="font-bold leading-[1.1] mb-6"
             style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
@@ -744,10 +846,10 @@ const Services = ({ onContact }: { onContact: () => void }) => {
                 <h3 className="font-bold leading-tight mb-1" style={{ fontSize: 'clamp(1.1rem, 2vw, 1.5rem)' }}>
                   {s.title}
                 </h3>
-                <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/40 font-bold">{s.sub}</p>
+                <p className="text-[10px] uppercase tracking-[0.28em] text-brand-navy/40 font-bold">{s.sub}</p>
               </div>
               <p className="text-[13px] text-brand-navy/65 leading-[1.65] hidden md:block max-w-[320px]">{s.desc}</p>
-              <span className="text-brand-navy/20 group-hover:text-brand-navy/60 group-hover:translate-x-1 transition-all duration-200 text-base">→</span>
+              <span className="text-brand-navy/20 group-hover:text-brand-gold group-hover:translate-x-1 transition-all duration-200 text-base">→</span>
             </motion.div>
           ))}
         </div>
@@ -768,7 +870,7 @@ const WhyIndependent = () => {
         animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        <p className="text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Por qué JCB</p>
+        <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Por qué JCB</p>
         <h2
           className="font-bold leading-[1.1] mb-6"
           style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
@@ -845,7 +947,7 @@ const Clients = () => {
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
         className="mb-10 md:mb-12"
       >
-        <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/55 font-bold mb-2">Instituciones</p>
+        <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-brand-navy/55 font-bold mb-2">Instituciones</p>
         <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.4rem)' }}>
           Entidades que han confiado<br className="hidden md:block" /> en nuestros informes
         </h2>
@@ -886,7 +988,7 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
         animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        <p className="text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Contacto</p>
+        <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Contacto</p>
         <h2
           className="font-bold leading-[1.1] mb-6"
           style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
@@ -926,7 +1028,7 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
           { label: 'Formato', value: 'Digital (PDF) o físico según corresponda' },
         ].map((item) => (
           <div key={item.label}>
-            <p className="text-[10px] uppercase tracking-[0.32em] text-white/50 font-bold mb-1">{item.label}</p>
+            <p className="text-[11px] uppercase tracking-[0.32em] text-white/50 font-bold mb-1">{item.label}</p>
             <p className="text-[15px] font-semibold">{item.value}</p>
           </div>
         ))}

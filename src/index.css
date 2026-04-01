@@ -19,6 +19,19 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+  /* Gold eyebrow accent — small horizontal rule before section labels */
+  .label-accent::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 1.5px;
+    background-color: #C5A059;
+    vertical-align: middle;
+    margin-right: 10px;
+    margin-bottom: 1px;
+    border-radius: 1px;
+  }
 }
 
 @keyframes marquee {
@@ -48,6 +61,7 @@
   }
 
   ::selection {
-    background: #1A2B3C22;
+    background: #C5A05933;
+    color: #1A2B3C;
   }
 }
