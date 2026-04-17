@@ -148,7 +148,7 @@ const ConsultationModal = ({
                   JCB CONSULT
                 </p>
                 <h2 className="font-bold text-xl text-brand-navy leading-tight">
-                  Solicite su cotización
+                  Agendemos su consulta
                 </h2>
                 <p className="text-[12px] text-brand-navy/60 mt-0.5">Respuesta en menos de 24 horas</p>
               </div>
@@ -337,7 +337,7 @@ const ConsultationModal = ({
 const FloatingCTA = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
-    aria-label="Solicitar Tasación"
+    aria-label="Agendemos una cita"
     className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 md:hidden
                bg-brand-navy text-white rounded-full border border-white/20
                px-8 py-4 shadow-2xl shadow-black/30
@@ -345,7 +345,7 @@ const FloatingCTA = ({ onClick }: { onClick: () => void }) => (
                flex items-center gap-2.5
                active:scale-95 transition-transform"
   >
-    Solicitar Tasación
+    Agendemos una cita
   </button>
 );
 
@@ -376,8 +376,9 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
   }, [menuOpen]);
 
   const navLinks = [
-    { href: '#servicios', label: 'Servicios' },
-    { href: '#proceso', label: 'Proceso' },
+    { href: '#tasaciones', label: 'Tasaciones' },
+    { href: '#pericias', label: 'Pericias' },
+    { href: '#blog', label: 'Blog' },
     { href: '#contacto', label: 'Contacto' },
   ];
 
@@ -390,8 +391,7 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
             aria-label="Inicio"
             className="flex-shrink-0 text-left group/logo"
           >
-            <p className="font-bold text-[15px] text-brand-navy leading-none tracking-tight relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-brand-gold group-hover/logo:after:w-full after:transition-all after:duration-300">JCB Consult</p>
-            <p className="text-[9px] uppercase tracking-[0.28em] text-brand-navy/45 font-semibold mt-0.5">Tasaciones - Pericias</p>
+            <p className="font-bold text-[20px] leading-none tracking-tight relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-brand-gold group-hover/logo:after:w-full after:transition-all after:duration-300" style={{ color: '#0057B8' }}>JCB Consult</p>
           </button>
 
           {/* Desktop nav */}
@@ -405,7 +405,7 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
               onClick={onContact}
               className="bg-brand-navy text-white rounded-full px-5 py-2.5 text-[12px] font-semibold hover:bg-brand-navy/90 transition-colors"
             >
-              Solicitar tasación
+              Agendar consulta
             </button>
           </div>
 
@@ -482,7 +482,7 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
                   onClick={() => { setMenuOpen(false); onContact(); }}
                   className="w-full bg-brand-navy text-white rounded-full py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 transition-colors"
                 >
-                  Solicitar tasación
+                  Agendar consulta
                 </button>
               </div>
             </motion.div>
@@ -563,7 +563,7 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
           onClick={onContact}
           className="w-full bg-brand-navy text-white rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-navy/20"
         >
-          Solicitar Tasación
+          Agendemos una cita
         </button>
         <p className="text-[11px] text-brand-navy/55 font-medium mt-2.5 text-center">Respuesta en menos de 24 horas</p>
       </div>
@@ -601,7 +601,7 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
         onClick={onContact}
         className="hidden md:block bg-brand-navy text-white rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-navy/20"
       >
-        Solicitar Tasación
+        Agendemos una cita
       </button>
       <p className="hidden md:block text-[11px] text-brand-navy/55 font-medium mt-3">Respuesta en menos de 24 horas</p>
     </motion.div>
@@ -741,19 +741,32 @@ const WhatYouReceive = () => {
   }, []);
 
   return (
-    <section id="proceso" className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
+    <section id="pericias" className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
       <div className="max-w-[1400px] mx-auto grid md:grid-cols-[1fr_1.7fr] gap-14 md:gap-24 items-start">
         <div>
-          <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Soluciones y propuesta de valor</p>
+          <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Pericias y tasaciones</p>
           <h2
             className="font-bold leading-[1.1] mb-6"
             style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
           >
-            Estudio técnico sólido, consistente, resultados y conclusiones directas que resisten cuestionamientos.
+            Estudio técnico sólido, resultados directos que resisten cuestionamientos.
           </h2>
-          <p className="text-[14px] leading-[1.8] text-white/65 max-w-[320px]">
-            Cada servicio incluye una visita de inspección, estudio de mercado, análisis de la información, aplicación de metodologías y normativas vigentes.
+          <p className="text-[14px] leading-[1.8] text-white/65 max-w-[320px] mb-8">
+            Cada informe incluye visita de inspección, estudio de mercado, análisis de datos y aplicación de metodologías bajo las normativas vigentes.
           </p>
+          <div className="space-y-2">
+            {[
+              'Reglamento Nacional de Tasaciones (MVCS)',
+              'Normas SBS — Superintendencia de Banca y Seguros',
+              'Normas del CIP — Colegio de Ingenieros del Perú',
+              'Código Procesal Civil — Pericias judiciales',
+            ].map((norm) => (
+              <div key={norm} className="flex items-start gap-2.5">
+                <span className="mt-1.5 w-1 h-1 rounded-full bg-brand-gold flex-shrink-0" />
+                <p className="text-[12px] text-white/50 leading-relaxed">{norm}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div ref={containerRef}>
@@ -771,7 +784,7 @@ const WhatYouReceive = () => {
           ))}
           <div className="border-t border-white/15 pt-5">
             <p className="text-[11px] uppercase tracking-[0.28em] text-white/60 font-bold">
-              VALIDO PARA BANCOS – MINISTERIOS – JUZGADOS
+              VÁLIDO PARA BANCOS – MINISTERIOS – JUZGADOS
             </p>
           </div>
         </div>
@@ -821,7 +834,7 @@ const Services = ({ onContact }: { onContact: () => void }) => {
   }, []);
 
   return (
-    <section id="servicios" className="bg-brand-ivory px-6 md:px-14 lg:px-20 py-12 md:py-24 border-t border-black/[0.07]">
+    <section id="tasaciones" className="bg-brand-ivory px-6 md:px-14 lg:px-20 py-12 md:py-24 border-t border-black/[0.07]">
       <div className="max-w-[1400px] mx-auto">
         <div className="flex items-end justify-between border-b border-black/[0.08] pb-8">
           <div>
@@ -1003,7 +1016,7 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
             onClick={onContact}
             className="bg-white text-brand-navy rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-white/90 active:scale-[0.98] transition-all"
           >
-            Solicitar Tasación
+            Agendemos una cita
           </button>
           <button
             onClick={onContact}
@@ -1040,6 +1053,151 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
 
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 
+// ─── COTIZADOR ────────────────────────────────────────────────────────────────
+
+const PRECIOS_BASE: Record<string, [number, number]> = {
+  'Departamento':    [350, 520],
+  'Casa':            [450, 680],
+  'Terreno':         [300, 460],
+  'Local Comercial': [500, 750],
+  'Oficina':         [420, 650],
+  'Industrial':      [580, 900],
+};
+
+const Cotizador = ({ onContact }: { onContact: () => void }) => {
+  const [tipo, setTipo] = useState('Departamento');
+  const [area, setArea] = useState('');
+  const [finalidad, setFinalidad] = useState('Garantía hipotecaria (banco)');
+  const { ref, inView } = useInView(0.1);
+
+  const estimate = () => {
+    const [lo, hi] = PRECIOS_BASE[tipo] ?? [380, 560];
+    const a = parseFloat(area) || 80;
+    const af = a > 200 ? 1.5 : a > 120 ? 1.25 : a > 80 ? 1.1 : 1;
+    const jf = ['Proceso judicial', 'Herencia / Divorcio'].includes(finalidad) ? 1.3 : 1;
+    return [Math.round(lo * af * jf / 10) * 10, Math.round(hi * af * jf / 10) * 10];
+  };
+
+  const [lo, hi] = estimate();
+  const hasArea = area !== '';
+
+  return (
+    <section id="cotizador" className="bg-white border-t border-black/[0.07] px-6 md:px-14 lg:px-20 py-12 md:py-24">
+      <div ref={ref} className="max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="mb-10"
+        >
+          <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-2">Herramienta</p>
+          <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
+            Cotizador rápido
+          </h2>
+          <p className="text-[14px] text-brand-navy/55 mt-2 max-w-lg">
+            Ingrese los datos del inmueble para obtener un precio referencial. La cotización exacta y sin costo se coordina con Juan Carlos Bejarano.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid md:grid-cols-[1fr_auto] gap-8 md:gap-16 items-start"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-navy/60 mb-1.5">Tipo de inmueble</label>
+              <select
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+                className="w-full bg-brand-ivory border border-black/[0.1] rounded-lg px-4 py-3 text-[14px] text-brand-navy appearance-none cursor-pointer focus:outline-none focus:border-brand-navy transition-colors"
+              >
+                {PROPERTY_TYPES.map((t) => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-navy/60 mb-1.5">Área (m²)</label>
+              <input
+                type="number"
+                placeholder="Ej. 85"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                className="w-full bg-brand-ivory border border-black/[0.1] rounded-lg px-4 py-3 text-[14px] text-brand-navy placeholder:text-brand-navy/30 focus:outline-none focus:border-brand-navy transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-navy/60 mb-1.5">Finalidad</label>
+              <select
+                value={finalidad}
+                onChange={(e) => setFinalidad(e.target.value)}
+                className="w-full bg-brand-ivory border border-black/[0.1] rounded-lg px-4 py-3 text-[14px] text-brand-navy appearance-none cursor-pointer focus:outline-none focus:border-brand-navy transition-colors"
+              >
+                {PURPOSES.map((p) => <option key={p}>{p}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="border border-black/[0.08] rounded-2xl p-6 min-w-[220px] bg-brand-ivory">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-brand-navy/45 font-bold mb-1">Precio referencial</p>
+            {hasArea ? (
+              <p className="font-bold text-brand-navy leading-none mt-2 mb-1" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>
+                S/. {lo.toLocaleString()} – {hi.toLocaleString()}
+              </p>
+            ) : (
+              <p className="font-bold text-brand-navy/25 leading-none mt-2 mb-1" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>
+                S/. ···
+              </p>
+            )}
+            <p className="text-[11px] text-brand-navy/40 mb-5">Incluye informe + firma digital · Lima</p>
+            <button
+              onClick={onContact}
+              className="w-full bg-brand-navy text-white rounded-full py-3 text-[12px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all"
+            >
+              Cotización exacta
+            </button>
+            <p className="text-[10px] text-brand-navy/35 text-center mt-2">Sin costo — respuesta en 24 h</p>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// ─── BLOG ─────────────────────────────────────────────────────────────────────
+
+const Blog = () => {
+  const { ref, inView } = useInView(0.1);
+  return (
+    <section id="blog" className="bg-brand-ivory px-6 md:px-14 lg:px-20 py-12 md:py-24 border-t border-black/[0.07]">
+      <div ref={ref} className="max-w-[1400px] mx-auto">
+        <div className="flex items-end justify-between border-b border-black/[0.08] pb-8 mb-12">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-2">Noticias y artículos</p>
+            <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
+              Blog JCB Consult
+            </h2>
+          </div>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center justify-center py-16 text-center"
+        >
+          <div className="w-12 h-12 rounded-full bg-brand-navy/[0.06] flex items-center justify-center mb-4">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-brand-navy/40">
+              <rect x="2" y="3" width="16" height="14" rx="2" />
+              <path d="M6 7h8M6 10h8M6 13h5" />
+            </svg>
+          </div>
+          <p className="text-[13px] text-brand-navy/50 font-medium">Próximamente — artículos sobre tasaciones y pericias</p>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 const Footer = () => (
   <footer className="bg-brand-navy text-white border-t border-white/[0.06] px-6 md:px-14 py-10">
     <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
@@ -1051,7 +1209,7 @@ const Footer = () => (
         © 2026 JCB Consult. Ingeniero Civil CIP 49101. Lima, Perú.
       </p>
       <div className="flex gap-7">
-        {[['#servicios', 'Servicios'], ['#contacto', 'Contacto']].map(([href, label]) => (
+        {[['#tasaciones', 'Tasaciones'], ['#pericias', 'Pericias'], ['#blog', 'Blog'], ['#contacto', 'Contacto']].map(([href, label]) => (
           <a key={href} href={href} className="text-[11px] text-white/50 hover:text-white transition-colors uppercase tracking-[0.18em]">
             {label}
           </a>
@@ -1076,6 +1234,8 @@ export default function App() {
       <Services onContact={openModal} />
       <WhyIndependent />
       <Clients />
+      <Cotizador onContact={openModal} />
+      <Blog />
       <ContactSection onContact={openModal} />
       <Footer />
 
