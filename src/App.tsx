@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 
 import logoMef         from './assets/clientes/mef.png';
 import logoBci         from './assets/clientes/bci-miami.png';
@@ -81,6 +81,7 @@ const ConsultationModal = ({
   const [form, setForm] = useState<LeadForm>(EMPTY_FORM);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [waUrl, setWaUrl] = useState<string | null>(null);
+  const modalRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
@@ -92,6 +93,29 @@ const ConsultationModal = ({
       setTimeout(() => { setStatus('idle'); setForm(EMPTY_FORM); setWaUrl(null); }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const modal = modalRef.current;
+    if (!modal) return;
+    const focusable = (Array.from(
+      modal.querySelectorAll('button, input, select, textarea, [tabindex]:not([tabindex="-1"])')
+    ) as HTMLElement[]).filter((el) => !el.hasAttribute('disabled'));
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    setTimeout(() => first?.focus(), 50);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const set = (field: keyof LeadForm) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -135,6 +159,10 @@ const ConsultationModal = ({
           onClick={(e) => e.target === e.currentTarget && onClose()}
         >
           <motion.div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
@@ -147,14 +175,14 @@ const ConsultationModal = ({
                 <p className="text-[10px] uppercase tracking-[0.35em] font-bold text-brand-navy/60 mb-1">
                   JCB CONSULT
                 </p>
-                <h2 className="font-bold text-xl text-brand-navy leading-tight">
+                <h2 id="modal-title" className="font-bold text-xl text-brand-navy leading-tight">
                   Agendemos su consulta
                 </h2>
                 <p className="text-[12px] text-brand-navy/60 mt-0.5">Respuesta en menos de 24 horas</p>
               </div>
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/[0.06] transition-colors text-brand-navy/40 hover:text-brand-navy mt-0.5"
+                className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-black/[0.06] transition-colors text-brand-navy/40 hover:text-brand-navy -mr-1.5"
                 aria-label="Cerrar"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
@@ -212,22 +240,23 @@ const ConsultationModal = ({
                   >
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelCls}>Tipo de inmueble</label>
-                        <select className={selectCls} value={form.propertyType} onChange={set('propertyType')}>
+                        <label htmlFor="f-propertyType" className={labelCls}>Tipo de inmueble</label>
+                        <select id="f-propertyType" className={selectCls} value={form.propertyType} onChange={set('propertyType')}>
                           {PROPERTY_TYPES.map((t) => <option key={t}>{t}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className={labelCls}>Distrito</label>
-                        <select className={selectCls} value={form.district} onChange={set('district')}>
+                        <label htmlFor="f-district" className={labelCls}>Distrito</label>
+                        <select id="f-district" className={selectCls} value={form.district} onChange={set('district')}>
                           {DISTRICTS.map((d) => <option key={d}>{d}</option>)}
                         </select>
                       </div>
                     </div>
 
                     <div>
-                      <label className={labelCls}>Dirección / Ubicación del inmueble *</label>
+                      <label htmlFor="f-location" className={labelCls}>Dirección / Ubicación del inmueble *</label>
                       <input
+                        id="f-location"
                         required
                         type="text"
                         placeholder="Ej. Av. Caminos del Inca 890, Surco"
@@ -239,8 +268,9 @@ const ConsultationModal = ({
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelCls}>Área aprox. (m²)</label>
+                        <label htmlFor="f-area" className={labelCls}>Área aprox. (m²)</label>
                         <input
+                          id="f-area"
                           type="number"
                           placeholder="Ej. 85"
                           className={inputCls}
@@ -249,8 +279,8 @@ const ConsultationModal = ({
                         />
                       </div>
                       <div>
-                        <label className={labelCls}>Finalidad</label>
-                        <select className={selectCls} value={form.purpose} onChange={set('purpose')}>
+                        <label htmlFor="f-purpose" className={labelCls}>Finalidad</label>
+                        <select id="f-purpose" className={selectCls} value={form.purpose} onChange={set('purpose')}>
                           {PURPOSES.map((p) => <option key={p}>{p}</option>)}
                         </select>
                       </div>
@@ -258,8 +288,9 @@ const ConsultationModal = ({
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelCls}>Nombre</label>
+                        <label htmlFor="f-name" className={labelCls}>Nombre</label>
                         <input
+                          id="f-name"
                           required
                           type="text"
                           placeholder="Juan Pérez"
@@ -269,8 +300,9 @@ const ConsultationModal = ({
                         />
                       </div>
                       <div>
-                        <label className={labelCls}>Teléfono *</label>
+                        <label htmlFor="f-phone" className={labelCls}>Teléfono *</label>
                         <input
+                          id="f-phone"
                           required
                           type="tel"
                           placeholder="999 999 999"
@@ -282,8 +314,9 @@ const ConsultationModal = ({
                     </div>
 
                     <div>
-                      <label className={labelCls}>Email <span className="normal-case font-normal text-brand-navy/30">(opcional)</span></label>
+                      <label htmlFor="f-email" className={labelCls}>Email <span className="normal-case font-normal text-brand-navy/30">(opcional)</span></label>
                       <input
+                        id="f-email"
                         type="email"
                         placeholder="correo@ejemplo.com"
                         className={inputCls}
@@ -293,8 +326,9 @@ const ConsultationModal = ({
                     </div>
 
                     <div>
-                      <label className={labelCls}>Mensaje breve <span className="normal-case font-normal text-brand-navy/30">(opcional)</span></label>
+                      <label htmlFor="f-message" className={labelCls}>Mensaje breve <span className="normal-case font-normal text-brand-navy/30">(opcional)</span></label>
                       <textarea
+                        id="f-message"
                         rows={3}
                         placeholder="Cuéntenos más sobre el inmueble o sus necesidades..."
                         className={`${inputCls} resize-none`}
@@ -304,7 +338,7 @@ const ConsultationModal = ({
                     </div>
 
                     {status === 'error' && (
-                      <p className="text-red-500 text-[12px] font-semibold">
+                      <p role="alert" className="text-red-500 text-[12px] font-semibold">
                         Ocurrió un error. Por favor intente de nuevo.
                       </p>
                     )}
@@ -315,7 +349,15 @@ const ConsultationModal = ({
                         type="submit"
                         className="w-full bg-brand-navy text-white rounded-full py-4 text-[13px] font-bold uppercase tracking-[0.2em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {status === 'loading' ? 'Enviando...' : 'Enviar solicitud'}
+                        {status === 'loading' ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Enviando...
+                        </span>
+                      ) : 'Enviar solicitud'}
                       </button>
                       <p className="text-center text-[11px] text-brand-navy/35 font-medium">
                         Al enviar, recibirá respuesta en menos de 24 horas
@@ -334,20 +376,37 @@ const ConsultationModal = ({
 
 // ─── FLOATING CTA (MOBILE) ────────────────────────────────────────────────────
 
-const FloatingCTA = ({ onClick }: { onClick: () => void }) => (
-  <button
-    onClick={onClick}
-    aria-label="Agendemos una cita"
-    className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 md:hidden
-               bg-brand-navy text-white rounded-full border border-white/20
-               px-8 py-4 shadow-2xl shadow-black/30
-               text-[13px] font-bold uppercase tracking-[0.18em]
-               flex items-center gap-2.5
-               active:scale-95 transition-transform"
-  >
-    Agendemos una cita
-  </button>
-);
+const FloatingCTA = ({ onClick }: { onClick: () => void }) => {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 120);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.2 }}
+          onClick={onClick}
+          aria-label="Agendemos una cita"
+          style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+          className="fixed left-1/2 -translate-x-1/2 z-40 md:hidden
+                     bg-brand-navy text-white rounded-full border border-white/20
+                     px-8 py-4 shadow-2xl shadow-black/30
+                     text-[13px] font-bold uppercase tracking-[0.18em]
+                     flex items-center gap-2.5
+                     active:scale-95 transition-transform"
+        >
+          Agendemos una cita
+        </motion.button>
+      )}
+    </AnimatePresence>
+  );
+};
 
 // ─── SHARED ICON ──────────────────────────────────────────────────────────────
 
@@ -365,7 +424,7 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -384,17 +443,22 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
 
   return (
     <>
-      <nav className={`sticky top-0 w-full z-50 bg-brand-ivory/95 backdrop-blur-md border-b border-black/[0.07] transition-shadow duration-200 ${scrolled ? 'shadow-sm' : ''}`}>
+      {/* Full-width nav — fades out on scroll */}
+      <motion.nav
+        animate={{ opacity: scrolled ? 0 : 1, y: scrolled ? -6 : 0 }}
+        transition={{ duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }}
+        style={{ pointerEvents: scrolled ? 'none' : 'auto' }}
+        className="sticky top-0 w-full z-50 bg-brand-ivory/95 backdrop-blur-md border-b border-black/[0.07]"
+      >
         <div className="max-w-[1400px] mx-auto px-6 md:px-14 lg:px-20 h-[60px] flex items-center justify-between">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            aria-label="Inicio"
-            className="flex-shrink-0 text-left group/logo"
+            aria-label="Inicio — JCB Consult"
+            className="flex-shrink-0 h-[60px] overflow-hidden flex items-center"
           >
-            <p className="font-bold text-[20px] leading-none tracking-tight relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-brand-gold group-hover/logo:after:w-full after:transition-all after:duration-300" style={{ color: '#0057B8' }}>JCB Consult</p>
+            <img src="/JCBLOGO.png" alt="JCB Consult" className="h-24 w-auto" style={{ mixBlendMode: 'multiply' }} />
           </button>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map(({ href, label }) => (
               <a key={href} href={href} className="text-[12px] font-medium text-brand-navy/65 hover:text-brand-navy transition-colors">
@@ -409,70 +473,96 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
             </button>
           </div>
 
-          {/* Mobile hamburger */}
           <button
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-[5px] -mr-1"
+            className="md:hidden w-11 h-11 flex flex-col items-center justify-center gap-[5px] -mr-1.5"
           >
-            <motion.span
-              animate={menuOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="block w-5 h-px bg-brand-navy origin-center"
-            />
-            <motion.span
-              animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-              transition={{ duration: 0.15 }}
-              className="block w-5 h-px bg-brand-navy"
-            />
-            <motion.span
-              animate={menuOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="block w-5 h-px bg-brand-navy origin-center"
-            />
+            <motion.span animate={menuOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }} transition={{ duration: 0.2 }} className="block w-5 h-px bg-brand-navy origin-center" />
+            <motion.span animate={menuOpen ? { opacity: 0 } : { opacity: 1 }} transition={{ duration: 0.15 }} className="block w-5 h-px bg-brand-navy" />
+            <motion.span animate={menuOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }} transition={{ duration: 0.2 }} className="block w-5 h-px bg-brand-navy origin-center" />
           </button>
         </div>
-      </nav>
+      </motion.nav>
+
+      {/* Dynamic Island pill — appears on scroll */}
+      <AnimatePresence>
+        {scrolled && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.92 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 380 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="bg-brand-navy/95 backdrop-blur-md text-white rounded-full px-4 py-2 flex items-center gap-5 shadow-2xl shadow-black/25 border border-white/[0.08]">
+              {/* Logo */}
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                aria-label="Inicio"
+                className="h-8 overflow-hidden flex items-center flex-shrink-0"
+              >
+                <img src="/JCBLOGO.png" alt="JCB Consult" className="h-16 w-auto" style={{ filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
+              </button>
+
+              {/* Divider */}
+              <div className="w-px h-4 bg-white/15 hidden md:block" />
+
+              {/* Nav links */}
+              <div className="hidden md:flex items-center gap-4">
+                {navLinks.map(({ href, label }) => (
+                  <a key={href} href={href} className="text-[11px] font-medium text-white/60 hover:text-white transition-colors">
+                    {label}
+                  </a>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={onContact}
+                className="bg-brand-gold text-white rounded-full px-4 py-1.5 text-[11px] font-bold hover:bg-brand-gold/90 transition-colors ml-1"
+              >
+                Agendar
+              </button>
+
+              {/* Mobile hamburger in pill */}
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label="Abrir menú"
+                className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-[4px]"
+              >
+                <span className="block w-4 h-px bg-white/70" />
+                <span className="block w-4 h-px bg-white/70" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile drawer */}
       <AnimatePresence>
         {menuOpen && (
           <>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="fixed inset-0 z-40 bg-black/40 md:hidden"
               onClick={() => setMenuOpen(false)}
             />
             <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               className="fixed top-0 right-0 h-full w-72 z-50 bg-brand-ivory shadow-2xl md:hidden flex flex-col"
             >
-              <div className="h-[60px] flex items-center justify-between px-6 border-b border-black/[0.07]">
-                <p className="font-bold text-[14px] text-brand-navy">Menú</p>
-                <button
-                  onClick={() => setMenuOpen(false)}
-                  aria-label="Cerrar menú"
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/[0.06] transition-colors"
-                >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M2 2l10 10M12 2L2 12" />
-                  </svg>
+              <div className="h-[60px] overflow-hidden flex items-center justify-between px-6 border-b border-black/[0.07]">
+                <img src="/JCBLOGO.png" alt="JCB Consult" className="h-24 w-auto" style={{ mixBlendMode: 'multiply' }} />
+                <button onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-black/[0.06] transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 2l10 10M12 2L2 12" /></svg>
                 </button>
               </div>
               <nav className="flex flex-col px-6 py-8 gap-1 flex-1">
                 {navLinks.map(({ href, label }) => (
-                  <a
-                    key={href}
-                    href={href}
-                    onClick={() => setMenuOpen(false)}
-                    className="text-[15px] font-medium text-brand-navy py-3 border-b border-black/[0.06] hover:text-brand-navy/70 transition-colors"
-                  >
+                  <a key={href} href={href} onClick={() => setMenuOpen(false)} className="text-[15px] font-medium text-brand-navy py-3 border-b border-black/[0.06] hover:text-brand-navy/70 transition-colors">
                     {label}
                   </a>
                 ))}
@@ -495,126 +585,217 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 
+const HERO_SLIDES = [
+  {
+    bg: 'bg-brand-ivory',
+    dark: false,
+    badge: 'Perito Certificado · SBS · Ministerio de Vivienda · CIP',
+    overline: 'Estudio Técnico · Lima Metropolitana',
+    title: 'Informes técnicos\nque resisten\ncualquier\ncuestionamiento.',
+    desc: 'Tasaciones de inmuebles, vehículos y equipos. Pericias judiciales y consultoría técnica. Aceptados por bancos, ministerios y juzgados.',
+    photo: null as string | null,
+    chips: undefined as string[] | undefined,
+  },
+  {
+    bg: 'bg-brand-navy',
+    dark: true,
+    badge: 'CEO · JCB Consult',
+    overline: 'Ing. Civil CIP · MBA · 25 años de experiencia',
+    title: 'Juan Carlos\nBejarano\nPerito Tasador\nCertificado SBS.',
+    desc: 'Fundador de JCB Consult. Certificado por SBS, Ministerio de Vivienda y Colegio de Ingenieros del Perú.',
+    photo: '/JCBHERO.png' as string | null,
+    chips: ['Ing. Civil CIP', 'MBA', 'Perito SBS', 'Perito MVCS', 'Perito CIP'],
+  },
+  {
+    bg: 'bg-brand-ivory',
+    dark: false,
+    badge: 'Informes válidos · Bancos · Ministerios · Juzgados',
+    overline: 'La diferencia de ser independiente',
+    title: 'Su propiedad\nvale más de lo\nque el banco\ndetermina.',
+    desc: 'Los tasadores bancarios protegen al banco, no a usted. JCB Consult determina el valor real de mercado con metodología técnica imparcial.',
+    photo: null as string | null,
+    chips: undefined as string[] | undefined,
+  },
+];
+
 const Hero = ({ onContact }: { onContact: () => void }) => {
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const touchStartX = React.useRef(0);
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [paused]);
+
+  const goTo = (idx: number) => {
+    setCurrent(idx);
+    setPaused(true);
+    setTimeout(() => setPaused(false), 8000);
+  };
+
+  const prev = () => { goTo((current - 1 + HERO_SLIDES.length) % HERO_SLIDES.length); };
+  const next = () => { goTo((current + 1) % HERO_SLIDES.length); };
+
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 48) diff > 0 ? next() : prev();
+  };
+
+  const slide = HERO_SLIDES[current];
+  const ctrl = slide.dark
+    ? { arrow: 'border-white/20 text-white/50 hover:text-white hover:border-white/50', dotActive: 'bg-white', dotInactive: 'bg-white/25 hover:bg-white/55', progress: 'bg-white/10', progressFill: 'bg-white/45' }
+    : { arrow: 'border-brand-navy/15 text-brand-navy/35 hover:text-brand-navy hover:border-brand-navy/40', dotActive: 'bg-brand-navy', dotInactive: 'bg-brand-navy/20 hover:bg-brand-navy/45', progress: 'bg-black/[0.07]', progressFill: 'bg-brand-gold/60' };
+
   return (
-  <section className="relative bg-brand-ivory overflow-hidden flex flex-col md:min-h-[78vh]">
-
-    {/* ── DESKTOP: photo bleeds right half ─────────────────────────────── */}
-    <div className="absolute inset-y-0 right-0 w-[43%] hidden md:block">
-      <img
-        src="/JCBHERO.png"
-        alt="Juan Carlos Bejarano — Perito Tasador Certificado SBS"
-        className="w-full h-full object-cover object-top"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-brand-ivory/90 via-brand-ivory/15 to-transparent" />
-    </div>
-
-    {/* ── MOBILE: photo first, full width ──────────────────────────────── */}
-    <div className="md:hidden relative w-full">
-      <img
-        src="/JCBHERO.png"
-        alt="Juan Carlos Bejarano"
-        className="w-full h-[72vw] object-cover object-top"
-      />
-      <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-brand-ivory via-brand-ivory/70 to-transparent" />
-    </div>
-
-    {/* ── MOBILE: name below image ──────────────────────────────────────── */}
-    <div className="md:hidden px-6 pt-4 pb-1">
-      <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold">Juan Carlos Bejarano · Perito Tasador Cert. SBS</p>
-    </div>
-
-    {/* ── TEXT CONTENT ─────────────────────────────────────────────────── */}
-
-    {/* Credential pill — visible on both mobile and desktop */}
-    <div className="relative z-10 px-6 md:px-14 lg:px-20 pt-5 md:pt-8">
-      <div className="inline-flex items-center gap-2 bg-brand-navy/[0.07] text-brand-navy/60 rounded-full px-4 py-1.5 w-fit border border-brand-gold/30">
-        <span className="text-[10px] font-bold uppercase tracking-[0.35em]">Ingeniero Civil CIP – MBA – Perito REPEV</span>
-      </div>
-    </div>
-
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-      className="relative z-10 md:flex-1 md:flex md:flex-col md:justify-center px-6 md:px-14 lg:px-20 pt-3 md:pt-3 pb-6 max-w-[680px]"
-    >
-
-      {/* Mobile overline */}
-      <div className="md:hidden flex items-center gap-2.5 mb-4">
-        <div className="w-5 h-px bg-brand-navy/25" />
-        <span className="text-[9px] font-bold uppercase tracking-[0.38em] text-brand-navy/45">Lima Metropolitana</span>
-      </div>
-
-      {/* Desktop name */}
-      <p className="hidden md:block text-[12px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-3">Juan Carlos Bejarano</p>
-
-      <h1
-        className="font-bold text-brand-navy leading-[1.08] mb-5 md:mb-6"
-        style={{ fontSize: 'clamp(1.95rem, 5.5vw, 5rem)' }}
+  <section
+    className="relative overflow-hidden min-h-[680px] md:min-h-[80vh]"
+    onMouseEnter={() => setPaused(true)}
+    onMouseLeave={() => setPaused(false)}
+    onTouchStart={handleTouchStart}
+    onTouchEnd={handleTouchEnd}
+  >
+    <AnimatePresence>
+      <motion.div
+        key={current}
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 1.03 }}
+        transition={{ duration: 0.38, ease: [0.25, 0.1, 0.25, 1] }}
+        className={`absolute inset-0 flex flex-col pb-20 md:pb-16
+          ${slide.photo ? 'justify-start md:justify-center pt-0' : 'justify-center pt-8'}
+          ${slide.bg}`}
       >
-        Perito Tasador<br />
-        Certificado
-      </h1>
+        {/* Desktop photo — right half bleeding */}
+        {slide.photo && (
+          <div className="absolute inset-y-0 right-0 w-[43%] hidden md:block z-[2]">
+            <img
+              src={slide.photo}
+              alt="Juan Carlos Bejarano — CEO JCB Consult"
+              className="w-full h-full object-cover object-top"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-brand-navy/90 via-brand-navy/15 to-transparent" />
+          </div>
+        )}
 
-      {/* Mobile CTA — antes de stats y descripción */}
-      <div className="md:hidden mb-6">
-        <button
-          onClick={onContact}
-          className="w-full bg-brand-navy text-white rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-navy/20"
-        >
-          Agendemos una cita
-        </button>
-        <p className="text-[11px] text-brand-navy/55 font-medium mt-2.5 text-center">Respuesta en menos de 24 horas</p>
-      </div>
+        {/* Mobile photo — full width at top */}
+        {slide.photo && (
+          <div className="md:hidden relative w-full mb-5">
+            <img
+              src={slide.photo}
+              alt="Juan Carlos Bejarano"
+              className="w-full h-[60vw] object-cover object-top"
+            />
+            <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-brand-navy via-brand-navy/70 to-transparent" />
+          </div>
+        )}
 
-      {/* Mobile quick stats */}
-      <div className="md:hidden flex items-center gap-4 mb-5 pb-5 border-b border-black/[0.07]">
-        <div className="text-center">
-          <p className="font-bold text-brand-navy text-[1.3rem] leading-none">300+</p>
-          <p className="text-[9px] text-brand-navy/40 font-medium mt-0.5 uppercase tracking-wide">Tasaciones</p>
+        {/* Logo watermark */}
+        <img
+          src="/JCBLOGO.png"
+          alt=""
+          aria-hidden="true"
+          className="absolute pointer-events-none select-none z-[1]"
+          style={{
+            opacity: current === 1 ? 0.07 : 0.05,
+            width: '70vw',
+            maxWidth: '860px',
+            left: '50%',
+            right: 'auto',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            mixBlendMode: current === 1 ? 'normal' : 'multiply',
+          }}
+        />
+
+        {/* Text content */}
+        <div className={`relative z-10 px-6 md:px-14 lg:px-20 ${
+          slide.photo
+            ? 'md:max-w-[57%]'
+            : current === 0
+              ? 'w-full max-w-[1400px] mx-auto text-center flex flex-col items-center'
+              : 'max-w-[720px]'
+        }`}>
+          <div className={`inline-flex items-center rounded-full px-4 py-1.5 w-fit border mb-5 ${slide.dark ? 'bg-white/[0.07] border-white/15 text-white/55' : 'bg-brand-navy/[0.07] border-brand-gold/30 text-brand-navy/60'}`}>
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em]">{slide.badge}</span>
+          </div>
+
+          <p className={`text-[11px] uppercase tracking-[0.32em] font-bold mb-4 ${slide.dark ? 'text-white/50' : 'text-brand-navy/50'}`}>
+            {slide.overline}
+          </p>
+
+          <h1
+            className={`font-bold leading-[1.08] mb-6 whitespace-pre-line ${slide.dark ? 'text-white' : 'text-brand-navy'} ${current === 0 ? 'max-w-[820px]' : ''}`}
+            style={{ fontSize: 'clamp(2rem, 5.5vw, 5rem)' }}
+          >
+            {slide.title}
+          </h1>
+
+          {slide.chips && (
+            <div className="hidden md:flex flex-wrap gap-2 mb-6">
+              {slide.chips.map((c) => (
+                <span key={c} className={`text-[10px] font-bold uppercase tracking-[0.2em] border rounded-full px-3 py-1 ${slide.dark ? 'border-white/15 text-white/50' : 'border-brand-navy/15 text-brand-navy/50'}`}>
+                  {c}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <p className={`text-[15px] md:text-[16px] leading-[1.75] mb-8 ${slide.dark ? 'text-white/65' : 'text-brand-navy/70'} ${current === 0 ? 'max-w-[600px]' : ''}`}>
+            {slide.desc}
+          </p>
+
+          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 ${current === 0 ? 'justify-center' : ''}`}>
+            <button
+              onClick={onContact}
+              className={`rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] active:scale-[0.98] transition-all shadow-lg ${
+                slide.dark
+                  ? 'bg-white text-brand-navy shadow-black/20 hover:bg-white/92'
+                  : 'bg-brand-navy text-white shadow-brand-navy/20 hover:bg-brand-navy/90'
+              }`}
+            >
+              Agendemos una cita
+            </button>
+            <p className={`text-[11px] font-medium ${slide.dark ? 'text-white/40' : 'text-brand-navy/50'}`}>
+              Respuesta en menos de 24 h
+            </p>
+          </div>
         </div>
-        <div className="w-px h-8 bg-black/[0.08]" />
-        <div className="text-center">
-          <p className="font-bold text-brand-navy text-[1.3rem] leading-none">25</p>
-          <p className="text-[9px] text-brand-navy/40 font-medium mt-0.5 uppercase tracking-wide">Años de exp.</p>
-        </div>
-        <div className="w-px h-8 bg-black/[0.08]" />
-        <div className="text-center">
-          <p className="font-bold text-brand-navy text-[1.3rem] leading-none">3–5</p>
-          <p className="text-[9px] text-brand-navy/40 font-medium mt-0.5 uppercase tracking-wide">Días entrega</p>
-        </div>
-      </div>
+      </motion.div>
+    </AnimatePresence>
 
-      {/* Desktop description */}
-      <p className="hidden md:block text-[16px] leading-[1.75] text-brand-navy/70 max-w-[420px] mb-10">
-        Informes técnicos de tasación de inmuebles, vehículos, equipos y maquinarias, consultoría, pericias, gestión inmobiliaria.
-      </p>
-
-      {/* Mobile description */}
-      <p className="md:hidden text-[14px] leading-[1.65] text-brand-navy/70 mb-4">
-        Informes de tasación de inmuebles, vehículos, equipos y maquinarias, consultoría y pericias.
-      </p>
-
-      {/* Desktop CTA */}
-      <button
-        onClick={onContact}
-        className="hidden md:block bg-brand-navy text-white rounded-full px-8 py-4 text-[13px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-navy/20"
-      >
-        Agendemos una cita
+    {/* Controls */}
+    <div className="absolute bottom-6 left-6 md:left-14 lg:left-20 z-20 flex items-center gap-3">
+      <button onClick={prev} aria-label="Slide anterior" className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${ctrl.arrow}`}>
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M7 1.5L3.5 5.5 7 9.5" />
+        </svg>
       </button>
-      <p className="hidden md:block text-[11px] text-brand-navy/55 font-medium mt-3">Respuesta en menos de 24 horas</p>
-    </motion.div>
-
-    {/* Credentials strip — desktop only */}
-    <div className="hidden md:block relative z-10 mt-auto border-t border-black/[0.08] px-6 md:px-14 lg:px-20 py-5">
-      <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
-        {['Superintendencia de Banca, Seguros y AFP', 'Ministerio de Vivienda Construcción y Saneamiento', 'Centro de Peritaje — Colegio de Ingenieros del Perú'].map((c, i) => (
-          <React.Fragment key={c}>
-            {i > 0 && <span className="text-brand-navy/25 text-sm">·</span>}
-            <span className="text-[10px] uppercase tracking-[0.28em] text-brand-navy/50 font-bold">{c}</span>
-          </React.Fragment>
-        ))}
+      {HERO_SLIDES.map((_, i) => (
+        <button
+          key={i}
+          onClick={() => goTo(i)}
+          aria-label={`Ir a slide ${i + 1}`}
+          className={`transition-all duration-300 rounded-full flex-shrink-0 ${i === current ? `w-5 h-1.5 ${ctrl.dotActive}` : `w-1.5 h-1.5 ${ctrl.dotInactive}`}`}
+        />
+      ))}
+      <button onClick={next} aria-label="Siguiente slide" className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${ctrl.arrow}`}>
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 1.5L7.5 5.5 4 9.5" />
+        </svg>
+      </button>
+      <div className={`flex-1 h-px ml-1 hidden md:block overflow-hidden min-w-[80px] ${ctrl.progress}`}>
+        <motion.div
+          key={`progress-${current}`}
+          initial={{ scaleX: 0, originX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 5.5, ease: 'linear' }}
+          className={`h-full origin-left ${ctrl.progressFill}`}
+        />
       </div>
     </div>
   </section>
@@ -627,9 +808,9 @@ const CredibilityStrip = () => {
   const stats = [
     { value: '25', suffix: 'años', label: 'de trayectoria' },
     { value: '300+', suffix: '', label: 'tasaciones realizadas' },
-    { value: 'SBS', suffix: '', label: 'perito valuador' },
-    { value: 'MVCS', suffix: '', label: 'perito tasador' },
-    { value: 'CIP', suffix: '', label: 'perito' },
+    { value: 'SBS', suffix: '', label: 'Superintendencia de Banca y Seguros' },
+    { value: 'MVCS', suffix: '', label: 'Ministerio de Vivienda y Saneamiento' },
+    { value: 'CIP', suffix: '', label: 'Colegio de Ingenieros del Perú' },
   ];
 
   const { ref: sectionRef, inView } = useInView(0.1);
@@ -674,7 +855,7 @@ const CredibilityStrip = () => {
               {s.value}
               {s.suffix && <span className="text-brand-navy/50 text-[0.45em] font-semibold ml-0.5">{s.suffix}</span>}
             </p>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-brand-navy/55 font-semibold whitespace-nowrap">{s.label}</p>
+            <p className="text-[10px] uppercase tracking-[0.15em] text-brand-navy/55 font-semibold leading-tight max-w-[90px]">{s.label}</p>
           </div>
         ))}
       </motion.div>
@@ -697,7 +878,7 @@ const CredibilityStrip = () => {
               {s.value}
               {s.suffix && <span className="text-brand-navy/50 text-[0.5em] font-semibold ml-1">{s.suffix}</span>}
             </p>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-navy/55 font-semibold whitespace-nowrap">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-brand-navy/55 font-semibold leading-tight max-w-[160px]">
               {s.label}
             </p>
           </div>
@@ -722,7 +903,7 @@ const WhatYouReceive = () => {
     },
     {
       title: 'Entrega de resultados',
-      desc: 'En formato y firma digital, entre 3 y 5 días hábiles. Aceptados por el sector privado y financiero, entidades estatales y judiciales.',
+      desc: 'En formato y firma digital, en 5 días hábiles desde la evaluación. Aceptados por el sector privado, entidades financieras, estatales y judiciales.',
     },
   ];
 
@@ -784,7 +965,7 @@ const WhatYouReceive = () => {
           ))}
           <div className="border-t border-white/15 pt-5">
             <p className="text-[11px] uppercase tracking-[0.28em] text-white/60 font-bold">
-              VÁLIDO PARA BANCOS – MINISTERIOS – JUZGADOS
+              APLICABLE A EMPRESAS, INSTITUCIONES FINANCIERAS Y JUZGADOS
             </p>
           </div>
         </div>
@@ -838,21 +1019,22 @@ const Services = ({ onContact }: { onContact: () => void }) => {
       <div className="max-w-[1400px] mx-auto">
         <div className="flex items-end justify-between border-b border-black/[0.08] pb-8">
           <div>
+            <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-2">Tasaciones · Pericias</p>
             <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
-              Servicios JCB Consult
+              Servicios para personas,<br className="hidden md:block" /> empresas e instituciones
             </h2>
           </div>
         </div>
 
         <div ref={listRef}>
           {services.map((s, i) => (
-            <motion.div
+            <motion.button
               key={s.n}
               initial={{ opacity: 0, y: 22 }}
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
               transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: i * 0.1 }}
               onClick={onContact}
-              className="group border-b border-black/[0.08] py-6 grid grid-cols-[40px_1fr_auto] md:grid-cols-[56px_1fr_1.4fr_auto] gap-x-6 items-center hover:bg-black/[0.015] transition-colors duration-200 -mx-6 md:-mx-14 lg:-mx-20 px-6 md:px-14 lg:px-20 cursor-pointer"
+              className="group w-full text-left border-b border-black/[0.08] py-6 grid grid-cols-[40px_1fr_auto] md:grid-cols-[56px_1fr_1.4fr_auto] gap-x-6 items-center hover:bg-black/[0.015] transition-colors duration-200 -mx-6 md:-mx-14 lg:-mx-20 px-6 md:px-14 lg:px-20 cursor-pointer"
             >
               <span className="text-[11px] font-bold text-brand-navy/25">{s.n}</span>
               <div>
@@ -863,9 +1045,130 @@ const Services = ({ onContact }: { onContact: () => void }) => {
               </div>
               <p className="text-[13px] text-brand-navy/65 leading-[1.65] hidden md:block max-w-[320px]">{s.desc}</p>
               <span className="text-brand-navy/20 group-hover:text-brand-gold group-hover:translate-x-1 transition-all duration-200 text-base">→</span>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
+      </div>
+    </section>
+  );
+};
+
+// ─── PROCESS ──────────────────────────────────────────────────────────────────
+
+const PROCESS_STEPS = [
+  {
+    n: '01',
+    title: 'Solicitud',
+    desc: 'Complete el formulario con los datos del inmueble. Respondemos en menos de 24 horas con una propuesta.',
+  },
+  {
+    n: '02',
+    title: 'Inspección',
+    desc: 'Visita técnica presencial al inmueble. Medición, diagnóstico y registro fotográfico completo.',
+  },
+  {
+    n: '03',
+    title: 'Investigación',
+    desc: 'Estudio de mercado con comparables vigentes. Análisis de data real y actualizada de la zona.',
+  },
+  {
+    n: '04',
+    title: 'Elaboración',
+    desc: 'Redacción del informe bajo normativas SBS, MVCS y CIP. Metodología técnica certificada.',
+  },
+  {
+    n: '05',
+    title: 'Entrega',
+    desc: 'Documento en formato digital con firma habilitada. Listo en 5 días hábiles desde la inspección.',
+  },
+];
+
+const Process = ({ onContact }: { onContact: () => void }) => {
+  const { ref, inView } = useInView(0.1);
+
+  return (
+    <section className="bg-white border-t border-black/[0.07] px-6 md:px-14 lg:px-20 py-12 md:py-24">
+      <div className="max-w-[1400px] mx-auto">
+        {/* Header */}
+        <div ref={ref} className="mb-14 md:mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div>
+            <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-3">Cómo trabajamos</p>
+            <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
+              Proceso claro,<br />resultados verificables.
+            </h2>
+          </div>
+          <p className="text-[14px] text-brand-navy/55 leading-relaxed max-w-sm md:text-right">
+            Cada informe sigue el mismo método riguroso — sin excepciones.
+          </p>
+        </div>
+
+        {/* Steps — desktop horizontal, mobile vertical */}
+        <div className="relative">
+          {/* Connector line desktop */}
+          <div className="hidden md:block absolute top-[28px] left-0 right-0 h-px bg-brand-navy/[0.08]" />
+          {/* Animated gold fill */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={inView ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
+            className="hidden md:block absolute top-[28px] left-0 right-0 h-px bg-brand-gold/40 origin-left"
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
+            {PROCESS_STEPS.map((step, i) => (
+              <motion.div
+                key={step.n}
+                initial={{ opacity: 0, y: 24 }}
+                animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 + i * 0.12 }}
+                className="relative md:pr-8"
+              >
+                {/* Mobile connector */}
+                {i < PROCESS_STEPS.length - 1 && (
+                  <div className="md:hidden absolute left-[27px] top-[56px] bottom-0 w-px bg-brand-navy/[0.08]" />
+                )}
+
+                <div className="flex md:flex-col gap-5 md:gap-0 py-6 md:py-0">
+                  {/* Step dot */}
+                  <div className="relative flex-shrink-0">
+                    <div className="w-14 h-14 rounded-full bg-brand-ivory border border-brand-navy/[0.1] flex items-center justify-center z-10 relative">
+                      <span className="text-[11px] font-bold text-brand-gold tracking-[0.15em]">{step.n}</span>
+                    </div>
+                  </div>
+
+                  {/* Text */}
+                  <div className="pt-0 md:pt-7">
+                    <h3 className="font-bold text-[1.05rem] text-brand-navy mb-2 leading-tight">{step.title}</h3>
+                    <p className="text-[12px] text-brand-navy/55 leading-[1.7]">{step.desc}</p>
+                  </div>
+                </div>
+
+                {/* Mobile border */}
+                {i < PROCESS_STEPS.length - 1 && (
+                  <div className="md:hidden absolute bottom-0 left-0 right-0 h-px bg-black/[0.06]" />
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="mt-14 pt-10 border-t border-black/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        >
+          <p className="text-[13px] text-brand-navy/50">
+            ¿Tiene preguntas sobre el proceso? Juan Carlos Bejarano responde en menos de 24 h.
+          </p>
+          <button
+            onClick={onContact}
+            className="flex-shrink-0 bg-brand-navy text-white rounded-full px-7 py-3 text-[12px] font-bold uppercase tracking-[0.18em] hover:bg-brand-navy/90 active:scale-[0.98] transition-all"
+          >
+            Iniciar proceso
+          </button>
+        </motion.div>
       </div>
     </section>
   );
@@ -918,20 +1221,102 @@ const WhyIndependent = () => {
             {[
               'Objetivo: determinar el valor real de mercado.',
               'Metodología técnica basada en comparables vigentes.',
-              'Informe válido para bancos, municipios y juzgados.',
+              'Informe válido para bancos, empresas, ministerios y juzgados.',
             ].map((t) => <li key={t} className="text-[14px] text-white/80 leading-relaxed">{t}</li>)}
           </ul>
         </div>
 
         <div className="border-t border-white/[0.07] pt-7 flex items-end gap-3">
           <span className="font-bold leading-none text-white/[0.07]" style={{ fontSize: '5.5rem' }}>
-            500+
+            300+
           </span>
           <p className="text-[10px] uppercase tracking-[0.22em] text-white/25 font-bold mb-3">tasaciones realizadas</p>
         </div>
       </motion.div>
     </div>
   </section>
+  );
+};
+
+// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
+
+const TESTIMONIALS = [
+  {
+    quote: 'El informe de JCB Consult fue determinante para que el banco aprobara mi crédito hipotecario. Entrega puntual y documentación impecable.',
+    name: 'Carlos Mendoza',
+    role: 'Empresario · Miraflores',
+    initials: 'CM',
+  },
+  {
+    quote: 'Necesitaba una tasación urgente para un proceso de herencia. Juan Carlos resolvió todo en tiempo récord con un informe que el juzgado aceptó sin objeciones.',
+    name: 'Patricia Villanueva',
+    role: 'Abogada · San Isidro',
+    initials: 'PV',
+  },
+  {
+    quote: 'Trabajamos con JCB Consult para valorizar el portafolio inmobiliario de la empresa. Metodología sólida, trato profesional y conocimiento técnico destacado.',
+    name: 'Roberto Salas',
+    role: 'Gerente de Finanzas · Lima',
+    initials: 'RS',
+  },
+];
+
+const Testimonials = () => {
+  const { ref, inView } = useInView(0.1);
+
+  return (
+    <section className="bg-brand-ivory border-t border-black/[0.07] px-6 md:px-14 lg:px-20 py-12 md:py-24">
+      <div ref={ref} className="max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="mb-12 md:mb-16"
+        >
+          <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-3">Clientes</p>
+          <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
+            Lo que dicen quienes<br className="hidden md:block" /> confiaron en JCB Consult.
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {TESTIMONIALS.map((t, i) => (
+            <motion.div
+              key={t.name}
+              initial={{ opacity: 0, y: 28 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: i * 0.12 }}
+              className="bg-white rounded-2xl p-7 border border-black/[0.06] flex flex-col gap-6"
+            >
+              {/* Stars */}
+              <div className="flex gap-1">
+                {Array.from({ length: 5 }).map((_, s) => (
+                  <svg key={s} width="13" height="13" viewBox="0 0 12 12" fill="#C5A059">
+                    <path d="M6 0l1.5 4.5H12L8.25 7.5l1.5 4.5L6 9.75 2.25 12l1.5-4.5L0 4.5h4.5z" />
+                  </svg>
+                ))}
+              </div>
+
+              {/* Quote */}
+              <p className="text-[14px] text-brand-navy/70 leading-[1.75] flex-1">
+                "{t.quote}"
+              </p>
+
+              {/* Author */}
+              <div className="flex items-center gap-3 border-t border-black/[0.06] pt-5">
+                <div className="w-9 h-9 rounded-full bg-brand-navy flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-white tracking-wide">{t.initials}</span>
+                </div>
+                <div>
+                  <p className="font-bold text-[13px] text-brand-navy leading-none mb-0.5">{t.name}</p>
+                  <p className="text-[11px] text-brand-navy/45">{t.role}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -1006,10 +1391,10 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
           className="font-bold leading-[1.1] mb-6"
           style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
         >
-          ¿Necesita tasar<br />un inmueble?
+          ¿Quisieras conversar<br />sobre su caso?
         </h2>
         <p className="text-[14px] leading-[1.8] text-white/65 max-w-[380px] mb-10">
-          Complete la solicitud y Juan Carlos Bejarano le responderá en menos de 24 horas con una propuesta para su caso.
+          Cuéntenos qué necesita y Juan Carlos Bejarano le responderá en menos de 24 horas con una propuesta personalizada.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button
@@ -1037,7 +1422,7 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
         {[
           { label: 'Cobertura', value: 'Lima Metropolitana y Callao · Regiones' },
           { label: 'Tiempo de respuesta', value: '24 horas para Lima · 48 horas para Regiones' },
-          { label: 'Entrega de informe', value: '3 a 5 días hábiles según caso o tipo de servicio' },
+          { label: 'Entrega de informe', value: '5 días hábiles desde la evaluación · según tipo de servicio' },
           { label: 'Formato', value: 'Digital (PDF) o físico según corresponda' },
         ].map((item) => (
           <div key={item.label}>
@@ -1202,8 +1587,13 @@ const Footer = () => (
   <footer className="bg-brand-navy text-white border-t border-white/[0.06] px-6 md:px-14 py-10">
     <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
       <div>
-        <p className="font-bold text-sm">JCB Consult</p>
-        <p className="text-[9px] uppercase tracking-[0.35em] text-white/40 font-bold mt-1">Tasaciones - Pericias</p>
+        <img
+          src="/JCBLOGO.png"
+          alt="JCB Consult"
+          className="h-8 w-auto mb-1"
+          style={{ filter: 'brightness(0) invert(1)', opacity: 0.85 }}
+        />
+        <p className="text-[10px] uppercase tracking-[0.35em] text-white/40 font-bold">Tasaciones · Pericias</p>
       </div>
       <p className="text-[11px] text-white/45">
         © 2026 JCB Consult. Ingeniero Civil CIP 49101. Lima, Perú.
@@ -1226,21 +1616,32 @@ export default function App() {
   const openModal = () => setModalOpen(true);
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen pb-20 md:pb-0">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[200] focus:bg-brand-navy focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-bold"
+      >
+        Ir al contenido principal
+      </a>
       <Navbar onContact={openModal} />
-      <Hero onContact={openModal} />
-      <CredibilityStrip />
-      <WhatYouReceive />
-      <Services onContact={openModal} />
-      <WhyIndependent />
-      <Clients />
-      <Cotizador onContact={openModal} />
-      <Blog />
-      <ContactSection onContact={openModal} />
+      <main id="main-content">
+        <Hero onContact={openModal} />
+        <CredibilityStrip />
+        <WhatYouReceive />
+        <Services onContact={openModal} />
+        <Process onContact={openModal} />
+        <WhyIndependent />
+        <Clients />
+        <Testimonials />
+        <Cotizador onContact={openModal} />
+        <Blog />
+        <ContactSection onContact={openModal} />
+      </main>
       <Footer />
-
       <ConsultationModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
       <FloatingCTA onClick={openModal} />
     </div>
+    </MotionConfig>
   );
 }
