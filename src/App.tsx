@@ -167,7 +167,7 @@ const ConsultationModal = ({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-            className="bg-brand-ivory w-full md:max-w-[560px] md:rounded-2xl rounded-t-3xl max-h-[92vh] overflow-y-auto shadow-2xl"
+            className="bg-brand-ivory w-full md:max-w-[560px] md:rounded-2xl rounded-t-3xl max-h-[92dvh] overflow-y-auto shadow-2xl"
           >
             {/* Header */}
             <div className="sticky top-0 bg-brand-ivory border-b border-black/[0.07] px-6 py-5 flex items-start justify-between">
@@ -178,7 +178,7 @@ const ConsultationModal = ({
                 <h2 id="modal-title" className="font-bold text-xl text-brand-navy leading-tight">
                   Agendemos su consulta
                 </h2>
-                <p className="text-[12px] text-brand-navy/60 mt-0.5">Respuesta en menos de 24 horas</p>
+                <p className="text-[12px] text-brand-navy/60 mt-0.5">Le responderemos a la brevedad</p>
               </div>
               <button
                 onClick={onClose}
@@ -238,7 +238,7 @@ const ConsultationModal = ({
                     onSubmit={handleSubmit}
                     className="space-y-5"
                   >
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="f-propertyType" className={labelCls}>Tipo de inmueble</label>
                         <select id="f-propertyType" className={selectCls} value={form.propertyType} onChange={set('propertyType')}>
@@ -259,6 +259,7 @@ const ConsultationModal = ({
                         id="f-location"
                         required
                         type="text"
+                        autoComplete="street-address"
                         placeholder="Ej. Av. Caminos del Inca 890, Surco"
                         className={inputCls}
                         value={form.location}
@@ -266,7 +267,7 @@ const ConsultationModal = ({
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="f-area" className={labelCls}>Área aprox. (m²)</label>
                         <input
@@ -286,13 +287,14 @@ const ConsultationModal = ({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="f-name" className={labelCls}>Nombre</label>
                         <input
                           id="f-name"
                           required
                           type="text"
+                          autoComplete="name"
                           placeholder="Juan Pérez"
                           className={inputCls}
                           value={form.name}
@@ -305,6 +307,7 @@ const ConsultationModal = ({
                           id="f-phone"
                           required
                           type="tel"
+                          autoComplete="tel"
                           placeholder="999 999 999"
                           className={inputCls}
                           value={form.phone}
@@ -318,6 +321,7 @@ const ConsultationModal = ({
                       <input
                         id="f-email"
                         type="email"
+                        autoComplete="email"
                         placeholder="correo@ejemplo.com"
                         className={inputCls}
                         value={form.email}
@@ -360,7 +364,7 @@ const ConsultationModal = ({
                       ) : 'Enviar solicitud'}
                       </button>
                       <p className="text-center text-[11px] text-brand-navy/35 font-medium">
-                        Al enviar, recibirá respuesta en menos de 24 horas
+                        Al enviar, recibirá respuesta a la brevedad
                       </p>
                     </div>
                   </motion.form>
@@ -436,7 +440,7 @@ const Navbar = ({ onContact }: { onContact: () => void }) => {
 
   const navLinks = [
     { href: '#tasaciones', label: 'Tasaciones' },
-    { href: '#pericias', label: 'Pericias' },
+    { href: '#peritajes', label: 'Peritajes' },
     { href: '#blog', label: 'Blog' },
     { href: '#contacto', label: 'Contacto' },
   ];
@@ -590,9 +594,10 @@ const HERO_SLIDES = [
     bg: 'bg-brand-ivory',
     dark: false,
     badge: 'Perito Certificado · SBS · Ministerio de Vivienda · CIP',
+    name: undefined as string | undefined,
     overline: 'Estudio Técnico · Lima Metropolitana',
     title: 'Informes técnicos\nque resisten\ncualquier\ncuestionamiento.',
-    desc: 'Tasaciones de inmuebles, vehículos y equipos. Pericias judiciales y consultoría técnica. Aceptados por bancos, ministerios y juzgados.',
+    desc: 'Tasaciones de inmuebles, vehículos y equipos. Peritajes judiciales y consultoría técnica. Aceptados por bancos, ministerios y juzgados.',
     photo: null as string | null,
     chips: undefined as string[] | undefined,
   },
@@ -600,8 +605,9 @@ const HERO_SLIDES = [
     bg: 'bg-brand-navy',
     dark: true,
     badge: 'CEO · JCB Consult',
-    overline: 'Ing. Civil CIP · MBA · 25 años de experiencia',
-    title: 'Juan Carlos\nBejarano\nPerito Tasador\nCertificado SBS.',
+    name: 'JUAN CARLOS BEJARANO' as string | undefined,
+    overline: 'MBA – Ingeniero Civil – Perito',
+    title: 'Perito Tasador\nCertificado SBS.',
     desc: 'Fundador de JCB Consult. Certificado por SBS, Ministerio de Vivienda y Colegio de Ingenieros del Perú.',
     photo: '/JCBHERO.png' as string | null,
     chips: ['Ing. Civil CIP', 'MBA', 'Perito SBS', 'Perito MVCS', 'Perito CIP'],
@@ -610,6 +616,7 @@ const HERO_SLIDES = [
     bg: 'bg-brand-ivory',
     dark: false,
     badge: 'Informes válidos · Bancos · Ministerios · Juzgados',
+    name: undefined as string | undefined,
     overline: 'La diferencia de ser independiente',
     title: 'Su propiedad\nvale más de lo\nque el banco\ndetermina.',
     desc: 'Los tasadores bancarios protegen al banco, no a usted. JCB Consult determina el valor real de mercado con metodología técnica imparcial.',
@@ -728,6 +735,14 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
             {slide.overline}
           </p>
 
+          {slide.name && (
+            <p
+              className={`font-bold uppercase tracking-[0.12em] mb-2 ${slide.dark ? 'text-white/90' : 'text-brand-navy'}`}
+              style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.5rem)' }}
+            >
+              {slide.name}
+            </p>
+          )}
           <h1
             className={`font-bold leading-[1.08] mb-6 whitespace-pre-line ${slide.dark ? 'text-white' : 'text-brand-navy'} ${current === 0 ? 'max-w-[820px]' : ''}`}
             style={{ fontSize: 'clamp(2rem, 5.5vw, 5rem)' }}
@@ -760,9 +775,6 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
             >
               Agendemos una cita
             </button>
-            <p className={`text-[11px] font-medium ${slide.dark ? 'text-white/40' : 'text-brand-navy/50'}`}>
-              Respuesta en menos de 24 h
-            </p>
           </div>
         </div>
       </motion.div>
@@ -770,7 +782,7 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
 
     {/* Controls */}
     <div className="absolute bottom-6 left-6 md:left-14 lg:left-20 z-20 flex items-center gap-3">
-      <button onClick={prev} aria-label="Slide anterior" className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${ctrl.arrow}`}>
+      <button onClick={prev} aria-label="Slide anterior" className={`w-11 h-11 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${ctrl.arrow}`}>
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M7 1.5L3.5 5.5 7 9.5" />
         </svg>
@@ -780,10 +792,12 @@ const Hero = ({ onContact }: { onContact: () => void }) => {
           key={i}
           onClick={() => goTo(i)}
           aria-label={`Ir a slide ${i + 1}`}
-          className={`transition-all duration-300 rounded-full flex-shrink-0 ${i === current ? `w-5 h-1.5 ${ctrl.dotActive}` : `w-1.5 h-1.5 ${ctrl.dotInactive}`}`}
-        />
+          className="flex-shrink-0 flex items-center justify-center py-4 px-1.5"
+        >
+          <span className={`transition-all duration-300 rounded-full block ${i === current ? `w-5 h-1.5 ${ctrl.dotActive}` : `w-1.5 h-1.5 ${ctrl.dotInactive}`}`} />
+        </button>
       ))}
-      <button onClick={next} aria-label="Siguiente slide" className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${ctrl.arrow}`}>
+      <button onClick={next} aria-label="Siguiente slide" className={`w-11 h-11 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${ctrl.arrow}`}>
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 1.5L7.5 5.5 4 9.5" />
         </svg>
@@ -894,7 +908,7 @@ const CredibilityStrip = () => {
 const WhatYouReceive = () => {
   const items = [
     {
-      title: 'Informe técnico',
+      title: 'Servicio',
       desc: 'Documento suscrito por ingenieros habilitados, con experiencia, formación y certificación; sustento de valores y dictámenes determinados.',
     },
     {
@@ -922,10 +936,10 @@ const WhatYouReceive = () => {
   }, []);
 
   return (
-    <section id="pericias" className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
+    <section id="peritajes" className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
       <div className="max-w-[1400px] mx-auto grid md:grid-cols-[1fr_1.7fr] gap-14 md:gap-24 items-start">
         <div>
-          <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Pericias y tasaciones</p>
+          <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Peritajes y tasaciones</p>
           <h2
             className="font-bold leading-[1.1] mb-6"
             style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
@@ -940,7 +954,7 @@ const WhatYouReceive = () => {
               'Reglamento Nacional de Tasaciones (MVCS)',
               'Normas SBS — Superintendencia de Banca y Seguros',
               'Normas del CIP — Colegio de Ingenieros del Perú',
-              'Código Procesal Civil — Pericias judiciales',
+              'Código Procesal Civil — Peritajes judiciales',
             ].map((norm) => (
               <div key={norm} className="flex items-start gap-2.5">
                 <span className="mt-1.5 w-1 h-1 rounded-full bg-brand-gold flex-shrink-0" />
@@ -996,7 +1010,7 @@ const Services = ({ onContact }: { onContact: () => void }) => {
     {
       n: '04', title: 'Judicial',
       sub: 'SUCESIONES – DIVORCIOS – LITIGIOS',
-      desc: 'Tasación de patrimonios, saneamiento técnico, consultoría, pericias con valor probatorio.',
+      desc: 'Tasación de patrimonios, saneamiento técnico, consultoría, peritajes con valor probatorio.',
     },
   ];
 
@@ -1019,7 +1033,7 @@ const Services = ({ onContact }: { onContact: () => void }) => {
       <div className="max-w-[1400px] mx-auto">
         <div className="flex items-end justify-between border-b border-black/[0.08] pb-8">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-2">Tasaciones · Pericias</p>
+            <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-2">Peritajes · Tasaciones</p>
             <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
               Servicios para personas,<br className="hidden md:block" /> empresas e instituciones
             </h2>
@@ -1059,7 +1073,7 @@ const PROCESS_STEPS = [
   {
     n: '01',
     title: 'Solicitud',
-    desc: 'Complete el formulario con los datos del inmueble. Respondemos en menos de 24 horas con una propuesta.',
+    desc: 'Complete el formulario con los datos del inmueble. Respondemos con una propuesta a la brevedad.',
   },
   {
     n: '02',
@@ -1160,7 +1174,7 @@ const Process = ({ onContact }: { onContact: () => void }) => {
           className="mt-14 pt-10 border-t border-black/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
         >
           <p className="text-[13px] text-brand-navy/50">
-            ¿Tiene preguntas sobre el proceso? Juan Carlos Bejarano responde en menos de 24 h.
+            ¿Tiene preguntas sobre el proceso? Juan Carlos Bejarano responde a la brevedad.
           </p>
           <button
             onClick={onContact}
@@ -1394,7 +1408,7 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
           ¿Quisieras conversar<br />sobre su caso?
         </h2>
         <p className="text-[14px] leading-[1.8] text-white/65 max-w-[380px] mb-10">
-          Cuéntenos qué necesita y Juan Carlos Bejarano le responderá en menos de 24 horas con una propuesta personalizada.
+          Cuéntenos qué necesita y Juan Carlos Bejarano le responderá con una propuesta personalizada.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button
@@ -1421,7 +1435,7 @@ const ContactSection = ({ onContact }: { onContact: () => void }) => {
       >
         {[
           { label: 'Cobertura', value: 'Lima Metropolitana y Callao · Regiones' },
-          { label: 'Tiempo de respuesta', value: '24 horas para Lima · 48 horas para Regiones' },
+          { label: 'Tiempo de respuesta', value: 'A la brevedad · Lima y Regiones' },
           { label: 'Entrega de informe', value: '5 días hábiles desde la evaluación · según tipo de servicio' },
           { label: 'Formato', value: 'Digital (PDF) o físico según corresponda' },
         ].map((item) => (
@@ -1576,7 +1590,7 @@ const Blog = () => {
               <path d="M6 7h8M6 10h8M6 13h5" />
             </svg>
           </div>
-          <p className="text-[13px] text-brand-navy/50 font-medium">Próximamente — artículos sobre tasaciones y pericias</p>
+          <p className="text-[13px] text-brand-navy/50 font-medium">Próximamente — artículos sobre tasaciones y peritajes</p>
         </motion.div>
       </div>
     </section>
@@ -1593,13 +1607,13 @@ const Footer = () => (
           className="h-8 w-auto mb-1"
           style={{ filter: 'brightness(0) invert(1)', opacity: 0.85 }}
         />
-        <p className="text-[10px] uppercase tracking-[0.35em] text-white/40 font-bold">Tasaciones · Pericias</p>
+        <p className="text-[10px] uppercase tracking-[0.35em] text-white/40 font-bold">Tasaciones · Peritajes</p>
       </div>
       <p className="text-[11px] text-white/45">
         © 2026 JCB Consult. Ingeniero Civil CIP 49101. Lima, Perú.
       </p>
       <div className="flex gap-7">
-        {[['#tasaciones', 'Tasaciones'], ['#pericias', 'Pericias'], ['#blog', 'Blog'], ['#contacto', 'Contacto']].map(([href, label]) => (
+        {[['#tasaciones', 'Tasaciones'], ['#peritajes', 'Peritajes'], ['#blog', 'Blog'], ['#contacto', 'Contacto']].map(([href, label]) => (
           <a key={href} href={href} className="text-[11px] text-white/50 hover:text-white transition-colors uppercase tracking-[0.18em]">
             {label}
           </a>
