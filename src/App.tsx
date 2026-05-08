@@ -610,7 +610,7 @@ const HERO_SLIDES = [
     title: 'Perito Tasador\nCertificado SBS.',
     desc: 'Fundador de JCB Consult. Certificado por SBS, Ministerio de Vivienda y Colegio de Ingenieros del Perú.',
     photo: '/JCBHERO.png' as string | null,
-    chips: ['Ing. Civil CIP', 'MBA', 'Perito SBS', 'Perito MVCS', 'Perito CIP'],
+    chips: ['MBA', 'Ing. Civil CIP', 'Perito SBS', 'Perito MVCS', 'Perito CIP'],
   },
   {
     bg: 'bg-brand-ivory',
@@ -947,7 +947,7 @@ const WhatYouReceive = () => {
             Estudio técnico sólido, resultados directos que resisten cuestionamientos.
           </h2>
           <p className="text-[14px] leading-[1.8] text-white/65 max-w-[320px] mb-8">
-            Cada informe incluye visita de inspección, estudio de mercado, análisis de datos y aplicación de metodologías bajo las normativas vigentes.
+            Cada servicio incluye visita de inspección, estudio de mercado, análisis de datos y aplicación de metodologías bajo las normativas vigentes.
           </p>
           <div className="space-y-2">
             {[
@@ -1033,9 +1033,9 @@ const Services = ({ onContact }: { onContact: () => void }) => {
       <div className="max-w-[1400px] mx-auto">
         <div className="flex items-end justify-between border-b border-black/[0.08] pb-8">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-2">Peritajes · Tasaciones</p>
+            <p className="text-[11px] uppercase tracking-[0.32em] text-brand-navy/50 font-bold mb-2">PERICIAS – TASACIONES</p>
             <h2 className="font-bold leading-tight" style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3rem)' }}>
-              Servicios para personas,<br className="hidden md:block" /> empresas e instituciones
+              Servicios JCB Consult
             </h2>
           </div>
         </div>
@@ -1112,7 +1112,7 @@ const Process = ({ onContact }: { onContact: () => void }) => {
             </h2>
           </div>
           <p className="text-[14px] text-brand-navy/55 leading-relaxed max-w-sm md:text-right">
-            Cada informe sigue el mismo método riguroso — sin excepciones.
+            Cada servicio sigue el mismo método riguroso — sin excepciones.
           </p>
         </div>
 
@@ -1207,9 +1207,6 @@ const WhyIndependent = () => {
         >
           La tasación<br />independiente<br /><span style={{ color: '#C5A059' }}>protege su<br />patrimonio.</span>
         </h2>
-        <p className="text-[14px] leading-[1.8] text-white/65 max-w-[320px]">
-          Los bancos contratan tasadores que minimizan su exposición al riesgo. Un informe independiente le otorga el argumento técnico para negociar.
-        </p>
       </motion.div>
 
       <motion.div
