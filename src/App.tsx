@@ -593,7 +593,7 @@ const HERO_SLIDES = [
   {
     bg: 'bg-brand-ivory',
     dark: false,
-    badge: 'Perito Certificado · SBS · Ministerio de Vivienda · CIP',
+    badge: 'Perito Certificado · Ministerio de Vivienda · CIP',
     name: undefined as string | undefined,
     overline: 'Estudio Técnico · Lima Metropolitana',
     title: 'Informes técnicos\nque resisten\ncualquier\ncuestionamiento.',
@@ -607,10 +607,10 @@ const HERO_SLIDES = [
     badge: 'CEO · JCB Consult',
     name: 'JUAN CARLOS BEJARANO' as string | undefined,
     overline: 'MBA – Ingeniero Civil – Perito',
-    title: 'Perito Tasador\nCertificado SBS.',
-    desc: 'Fundador de JCB Consult. Certificado por SBS, Ministerio de Vivienda y Colegio de Ingenieros del Perú.',
+    title: 'Perito Tasador\nCertificado.',
+    desc: 'Fundador de JCB Consult. Certificado por el Ministerio de Vivienda y el Colegio de Ingenieros del Perú.',
     photo: '/JCBHERO.png' as string | null,
-    chips: ['MBA', 'Ing. Civil CIP', 'Perito SBS', 'Perito MVCS', 'Perito CIP'],
+    chips: ['MBA', 'Ing. Civil CIP', 'Perito MVCS', 'Perito CIP'],
   },
   {
     bg: 'bg-brand-ivory',
@@ -1194,15 +1194,16 @@ const WhyIndependent = () => {
   const { ref, inView } = useInView(0.1);
   return (
   <section className="bg-brand-navy text-white px-6 md:px-14 lg:px-20 py-12 md:py-24">
-    <div ref={ref} className="max-w-[1400px] mx-auto grid md:grid-cols-[1fr_1.1fr] gap-14 md:gap-24 items-start">
+    <div ref={ref} className="max-w-[900px] mx-auto">
       <motion.div
-        initial={{ opacity: 0, x: -30 }}
-        animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        className="mb-10"
       >
         <p className="label-accent text-[11px] uppercase tracking-[0.32em] text-white/60 font-bold mb-5">Por qué JCB</p>
         <h2
-          className="font-bold leading-[1.1] mb-6"
+          className="font-bold leading-[1.1]"
           style={{ fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)' }}
         >
           La tasación<br />independiente<br /><span style={{ color: '#C5A059' }}>protege su<br />patrimonio.</span>
@@ -1210,22 +1211,10 @@ const WhyIndependent = () => {
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, x: 30 }}
-        animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        className="pt-0 md:pt-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        <div className="border-t border-white/10 pt-8 pb-9">
-          <p className="text-[10px] uppercase tracking-[0.35em] text-white/55 font-bold mb-5">Tasador Bancario</p>
-          <ul className="space-y-3">
-            {[
-              'Objetivo: proteger el riesgo del banco.',
-              'Aplica factores de descuento conservadores.',
-              'Puede subvaluar la propiedad hasta un 20%.',
-            ].map((t) => <li key={t} className="text-[14px] text-white/60 leading-relaxed">{t}</li>)}
-          </ul>
-        </div>
-
         <div className="border-t border-white/20 pt-8 pb-9">
           <p className="text-[10px] uppercase tracking-[0.35em] text-white/75 font-bold mb-5">Tasador Independiente · JCB</p>
           <ul className="space-y-3">
